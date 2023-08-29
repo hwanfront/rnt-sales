@@ -1,0 +1,17 @@
+{
+  "name": "rnt-sales",
+  "version": "0.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/hwanfront/rnt-sales.git",
+  "author": "hwanfront <kim015jh@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "server": "yarn workspace server start",
+    "client": "yarn workspace client dev"
+  }
+}
