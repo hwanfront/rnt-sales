@@ -8,7 +8,7 @@ import hpp from 'hpp';
 import helmet from 'helmet';
 import passport from 'passport';
 
-import sequelize from './models/sequelize';
+import { sequelize } from './models';
 
 import { RouteError } from './exception';
 
@@ -17,7 +17,7 @@ require('dotenv').config();
 const app = express();
 
 app.set('port', process.env.PORT || 3001);
-sequelize.sync({ force: false })
+sequelize.sync({ alter: true })
   .then(() => {
     console.log('DB 연결 성공');
   })
