@@ -6,9 +6,8 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import hpp from 'hpp';
 import helmet from 'helmet';
-import passport from 'passport';
 
-import sequelize from './models/sequelize';
+import { sequelize } from './models';
 
 import { RouteError } from './exception';
 
@@ -17,14 +16,13 @@ require('dotenv').config();
 const app = express();
 
 app.set('port', process.env.PORT || 3001);
-sequelize.sync({ force: false })
-  .then(() => {
-    console.log('DB 연결 성공');
-  })
-  .catch((err: Error) => {
-    console.error(err);
-  });
-
+sequelize.sync({ alter: true })
+.then(() => {
+  console.log('DB 연결 성공');
+})
+.catch((err: Error) => {
+  console.error(err);
+});
 
 const prod = process.env.NODE_ENV === "production";
 
@@ -61,8 +59,6 @@ if(prod) {
   sessionOption.proxy = true;
 }
 app.use(session(sessionOption));
-app.use(passport.initialize());
-app.use(passport.session());
 
 // router
 
