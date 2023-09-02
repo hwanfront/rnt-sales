@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import path from 'path';
 import morgan from 'morgan';
 import session from 'express-session';
@@ -8,16 +8,16 @@ import hpp from 'hpp';
 import helmet from 'helmet';
 import passport from 'passport';
 
+import passportConfig from './passport';
 import { sequelize } from './models';
-
-import { RouteError } from './exception';
+import userRouter from './routes/users';
 
 require('dotenv').config();
 
 const app = express();
 
 app.set('port', process.env.PORT || 3001);
-sequelize.sync({ alter: true })
+sequelize.sync({ force: true })
   .then(() => {
     console.log('DB 연결 성공');
   })
@@ -25,6 +25,7 @@ sequelize.sync({ alter: true })
     console.error(err);
   });
 
+passportConfig();
 
 const prod = process.env.NODE_ENV === "production";
 
@@ -51,7 +52,6 @@ const sessionOption: session.SessionOptions = {
   secret: process.env.COOKIE_SECRET || '',
   cookie: {
     httpOnly: true,
-    secure: true,
   }
 }
 if(prod) {
@@ -65,19 +65,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // router
-
-app.use((req: Request , res: Response, next) => {
-  const error = new RouteError(`${req.method} ${req.url} 라우터가 없습니다.`);
-  error.status = 404;
-  next(error);
-});
-
-app.use((err: RouteError, req: Request, res: Response, next: NextFunction) => {
-  res.locals.message = err.message;
-  res.locals.error = process.env.NODE_ENV !== 'production' ? err : {};
-  res.status(err.status || 500);
-  res.render('error');
-});
+app.use('/api/user', userRouter);
 
 app.listen(app.get('port'), () => {
   console.log(app.get('port'), '번 포트에서 대기 중');
