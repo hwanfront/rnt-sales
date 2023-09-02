@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "target": "ES6",
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -12,10 +13,11 @@
     "isolatedModules": true,
     "noEmit": false,
     "outDir": "./dist",
+    "typeRoots": ["../node_module/@types", "./node_module/@types", "./types"],
   },
   "ts-node": {
     "files": true
   },
-  "include": ["src/**/*"],
+  "include": ["./src/**/*", "./types"],
   "exclude": ["node_modules"],
 }
