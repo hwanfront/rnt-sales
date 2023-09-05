@@ -36,6 +36,23 @@ router.patch('/info', checkAuthenticated, async (req, res, next) => {
   }
 })
 
+router.post('/info', checkAuthenticated, async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: { id: req.user && req.user.id },
+      attributes: ["id", "nickname", "email"]
+    })
+    if(!user) {
+      return res.status(404).send("계정이 존재하지 않습니다.");
+    }
+    return res.status(200).json(user);
+
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+})
+
 router.post('/register', async (req, res, next) => {
   try {
     const exUser = await User.findOne({
