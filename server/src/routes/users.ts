@@ -7,6 +7,24 @@ import User from '../models/user';
 
 const router = express.Router();
 
+router.get('/info/:id', checkAuthenticated, async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: {
+        id: req.params.id
+      },
+      attributes: ["id", "nickname", "email"]
+    })
+    if(!user) {
+      return res.status(404).send('존재하지 않는 사용자입니다.');
+    }
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+})
+
 router.patch('/info', checkAuthenticated, async (req, res, next) => {
   try {
     const user = await User.findOne({
@@ -36,7 +54,7 @@ router.patch('/info', checkAuthenticated, async (req, res, next) => {
   }
 })
 
-router.post('/info', checkAuthenticated, async (req, res, next) => {
+router.get('/info', checkAuthenticated, async (req, res, next) => {
   try {
     const user = await User.findOne({
       where: { id: req.user && req.user.id },
