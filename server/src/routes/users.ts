@@ -7,6 +7,20 @@ import User from '../models/user';
 
 const router = express.Router();
 
+router.delete('/', checkAuthenticated, async (req, res, next) => {
+  try {
+    await User.destroy({
+      where: {
+        id: req.user!.id
+      }
+    })
+    res.status(201).send("ok");
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+})
+
 router.get('/info/:id', checkAuthenticated, async (req, res, next) => {
   try {
     const user = await User.findOne({
