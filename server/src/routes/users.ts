@@ -36,7 +36,7 @@ router.patch('/info', checkAuthenticated, async (req, res, next) => {
   }
 })
 
-router.post('/info', checkAuthenticated, async (req, res, next) => {
+router.get('/info', checkAuthenticated, async (req, res, next) => {
   try {
     const user = await User.findOne({
       where: { id: req.user && req.user.id },
