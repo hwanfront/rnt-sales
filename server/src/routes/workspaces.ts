@@ -8,71 +8,27 @@ import User from '../models/user';
 
 const router = express.Router();
 
-router.delete('/:id', checkAuthenticated,async (req, res, next) => {
-  const transaction = await sequelize.transaction();
+router.get('/', checkAuthenticated, async (req, res, next) => {
   try {
-    const workspace = await Workspace.findOne({
+    const userId = await User.findOne({
       where: {
-        id: req.params.id,
+        id: req.user!.id,
       },
-      attributes: ["id", "OwnerId"],
+      attributes: ["id"]
     })
-    if(!workspace) {
-      return res.status(404).send('존재하지 않는 Workspace입니다.');
+    if(!userId) {
+      return res.status(404).send('존재하지 않는 사용자입니다.');
     }
-    if(workspace.OwnerId !== req.user!.id) {
-      return res.status(401).send('Workspace에 대한 권한이 없습니다!');
-    }
-    await Workspace.destroy({
-      where: {
-        id: workspace.id
-      }
-    })
-    await WorkspaceMember.destroy({
-      where: {
-        WorkspaceId: workspace.id
-      }
-    })
-    transaction.commit();
-    res.status(201).send("Workspace 삭제 성공");
-  } catch (error) {
-    transaction.rollback();
-    console.error(error);
-    return next(error);
-  }
-})
-
-router.patch('/:id', checkAuthenticated, async (req, res, next) => {
-  try {
-    const workspace = await Workspace.findOne({
-      where: {
-        id: req.params.id,
-      },
-      attributes: ["id", "OwnerId"],
-    })
-    if(!workspace) {
-      return res.status(404).send('존재하지 않는 Workspace입니다.');
-    }
-    if(workspace.OwnerId !== req.user!.id) {
-      return res.status(401).send('Workspace에 대한 권한이 없습니다!');
-    }
-    const newOwner = await User.findOne({
-      where: req.body?.newOwnerEmail ? ({
-        email: req.body?.newOwnerEmail
-      }) : {},
-      attributes: ["id"],
-    })
-    if(req.body.newOwnerEmail && !newOwner) {
-      return res.status(404).send('존재하지 않는 이메일입니다.');
-    }
-    await Workspace.update({
-      name: req.body.name,
-      url: req.body.url,
-      OwnerId: newOwner!.id
-    }, {
-      where: { id: workspace.id }
-    })
-    res.status(200).send("Workspace 수정 성공");
+    const user = await User.findByPk(req.user!.id, {
+      attributes: ["nickname", "email"],
+      include: [{
+        model: Workspace,
+        as: "Workspaces",
+        attributes: ["id", "name", "url", "updatedAt", "OwnerId"],
+        order: [["updatedAt", "DESC"]],
+      }],
+    });
+    res.status(200).json(user);
   } catch (error) {
     console.error(error);
     return next(error);
@@ -111,33 +67,6 @@ router.get('/:id', checkAuthenticated, async (req, res, next) => {
   }
 })
 
-router.get('/', checkAuthenticated, async (req, res, next) => {
-  try {
-    const userId = await User.findOne({
-      where: {
-        id: req.user!.id,
-      },
-      attributes: ["id"]
-    })
-    if(!userId) {
-      return res.status(404).send('존재하지 않는 사용자입니다.');
-    }
-    const user = await User.findByPk(req.user!.id, {
-      attributes: ["nickname", "email"],
-      include: [{
-        model: Workspace,
-        as: "Workspaces",
-        attributes: ["id", "name", "url", "updatedAt", "OwnerId"],
-      }],
-    });
-
-    res.status(200).json(user);
-  } catch (error) {
-    console.error(error);
-    return next(error);
-  }
-})
-
 router.post('/', checkAuthenticated, async (req, res, next) => {
   const transaction = await sequelize.transaction();
   try {
@@ -162,6 +91,77 @@ router.post('/', checkAuthenticated, async (req, res, next) => {
     }, { transaction })
     transaction.commit();
     res.status(201).send("Workspace 생성 성공");
+  } catch (error) {
+    transaction.rollback();
+    console.error(error);
+    return next(error);
+  }
+})
+
+router.patch('/:id', checkAuthenticated, async (req, res, next) => {
+  try {
+    const workspace = await Workspace.findOne({
+      where: {
+        id: req.params.id,
+      },
+      attributes: ["id", "OwnerId"],
+    })
+    if(!workspace) {
+      return res.status(404).send('존재하지 않는 Workspace입니다.');
+    }
+    if(workspace.OwnerId !== req.user!.id) {
+      return res.status(401).send('Workspace에 대한 권한이 없습니다!');
+    }
+    const newOwner = await User.findOne({
+      where: req.body?.newOwnerEmail ? ({
+        email: req.body?.newOwnerEmail
+      }) : {},
+      attributes: ["id"],
+    })
+    if(req.body.newOwnerEmail && !newOwner) {
+      return res.status(404).send('존재하지 않는 이메일입니다.');
+    }
+    await Workspace.update({
+      name: req.body.name,
+      url: req.body.url,
+      OwnerId: newOwner!.id
+    }, {
+      where: { id: workspace.id }
+    })
+    res.status(201).send("Workspace 수정 성공");
+  } catch (error) {
+    console.error(error);
+    return next(error);
+  }
+})
+
+router.delete('/:id', checkAuthenticated,async (req, res, next) => {
+  const transaction = await sequelize.transaction();
+  try {
+    const workspace = await Workspace.findOne({
+      where: {
+        id: req.params.id,
+      },
+      attributes: ["id", "OwnerId"],
+    })
+    if(!workspace) {
+      return res.status(404).send('존재하지 않는 Workspace입니다.');
+    }
+    if(workspace.OwnerId !== req.user!.id) {
+      return res.status(401).send('Workspace에 대한 권한이 없습니다!');
+    }
+    await Workspace.destroy({
+      where: {
+        id: workspace.id
+      }
+    })
+    await WorkspaceMember.destroy({
+      where: {
+        WorkspaceId: workspace.id
+      }
+    })
+    transaction.commit();
+    res.status(200).send("Workspace 삭제 성공");
   } catch (error) {
     transaction.rollback();
     console.error(error);
