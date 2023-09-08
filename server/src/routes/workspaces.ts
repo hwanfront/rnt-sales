@@ -8,6 +8,38 @@ import User from '../models/user';
 
 const router = express.Router();
 
+router.get('/:id', checkAuthenticated, async (req, res, next) => {
+  try {
+    const workspace = await Workspace.findOne({
+      attributes: ["id", "name", "url", "createdAt", "updatedAt"],
+      where: {
+        url: req.params.id
+      },
+      include: [{
+        model: User,
+        as: "Owners",
+        attributes: ["nickname", "email"]
+      }]
+    })
+    if(!workspace) {
+      return res.status(404).send('존재하지 않는 URL입니다.');
+    }
+    const isMember = await WorkspaceMember.findOne({
+      where: {
+        WorkspaceId: workspace.id,
+        UserId: req.user!.id
+      }
+    });
+    if(!isMember) {
+      return res.status(401).send('Workspace에 대한 권한이 없습니다!');
+    }
+    res.status(200).json(workspace);
+  } catch (error) {
+    console.error(error);
+    return next(error);
+  }
+})
+
 router.get('/', checkAuthenticated, async (req, res, next) => {
   try {
     const userId = await User.findOne({
