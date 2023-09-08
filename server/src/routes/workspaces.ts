@@ -8,6 +8,43 @@ import User from '../models/user';
 
 const router = express.Router();
 
+router.patch('/:id', checkAuthenticated, async (req, res, next) => {
+  try {
+    const workspace = await Workspace.findOne({
+      where: {
+        id: req.params.id,
+      },
+      attributes: ["id", "OwnerId"],
+    })
+    if(!workspace) {
+      return res.status(404).send('존재하지 않는 Workspace입니다.');
+    }
+    if(workspace.OwnerId !== req.user!.id) {
+      return res.status(401).send('Workspace에 대한 권한이 없습니다!');
+    }
+    const newOwner = await User.findOne({
+      where: req.body?.newOwnerEmail ? ({
+        email: req.body?.newOwnerEmail
+      }) : {},
+      attributes: ["id"],
+    })
+    if(req.body.newOwnerEmail && !newOwner) {
+      return res.status(404).send('존재하지 않는 이메일입니다.');
+    }
+    await Workspace.update({
+      name: req.body.name,
+      url: req.body.url,
+      OwnerId: newOwner!.id
+    }, {
+      where: { id: workspace.id }
+    })
+    res.status(200).json("Workspace 수정 성공");
+  } catch (error) {
+    console.error(error);
+    return next(error);
+  }
+})
+
 router.get('/:id', checkAuthenticated, async (req, res, next) => {
   try {
     const workspace = await Workspace.findOne({
