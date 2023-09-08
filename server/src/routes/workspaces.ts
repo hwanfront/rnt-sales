@@ -4,8 +4,36 @@ import { checkAuthenticated } from './middleware';
 import Workspace from '../models/workspace';
 import { sequelize } from '../models';
 import WorkspaceMember from '../models/workspaceMember';
+import User from '../models/user';
 
 const router = express.Router();
+
+router.get('/', checkAuthenticated, async (req, res, next) => {
+  try {
+    const userId = await User.findOne({
+      where: {
+        id: req.user!.id,
+      },
+      attributes: ["id"]
+    })
+    if(!userId) {
+      return res.status(404).send('존재하지 않는 사용자입니다.');
+    }
+    const user = await User.findByPk(req.user!.id, {
+      attributes: ["nickname", "email"],
+      include: [{
+        model: Workspace,
+        as: "Workspaces",
+        attributes: ["id", "name", "url", "updatedAt", "OwnerId"],
+      }],
+    });
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    return next(error);
+  }
+})
 
 router.post('/', checkAuthenticated, async (req, res, next) => {
   const transaction = await sequelize.transaction();
