@@ -8,6 +8,40 @@ import User from '../models/user';
 
 const router = express.Router();
 
+router.delete('/:id', checkAuthenticated,async (req, res, next) => {
+  const transaction = await sequelize.transaction();
+  try {
+    const workspace = await Workspace.findOne({
+      where: {
+        id: req.params.id,
+      },
+      attributes: ["id", "OwnerId"],
+    })
+    if(!workspace) {
+      return res.status(404).send('존재하지 않는 Workspace입니다.');
+    }
+    if(workspace.OwnerId !== req.user!.id) {
+      return res.status(401).send('Workspace에 대한 권한이 없습니다!');
+    }
+    await Workspace.destroy({
+      where: {
+        id: workspace.id
+      }
+    })
+    await WorkspaceMember.destroy({
+      where: {
+        WorkspaceId: workspace.id
+      }
+    })
+    transaction.commit();
+    res.status(201).send("Workspace 삭제 성공");
+  } catch (error) {
+    transaction.rollback();
+    console.error(error);
+    return next(error);
+  }
+})
+
 router.patch('/:id', checkAuthenticated, async (req, res, next) => {
   try {
     const workspace = await Workspace.findOne({
@@ -38,7 +72,7 @@ router.patch('/:id', checkAuthenticated, async (req, res, next) => {
     }, {
       where: { id: workspace.id }
     })
-    res.status(200).json("Workspace 수정 성공");
+    res.status(200).send("Workspace 수정 성공");
   } catch (error) {
     console.error(error);
     return next(error);
