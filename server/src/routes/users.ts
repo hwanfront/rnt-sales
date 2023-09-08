@@ -7,14 +7,17 @@ import User from '../models/user';
 
 const router = express.Router();
 
-router.delete('/', checkAuthenticated, async (req, res, next) => {
+router.get('/info', checkAuthenticated, async (req, res, next) => {
   try {
-    await User.destroy({
-      where: {
-        id: req.user!.id
-      }
+    const user = await User.findOne({
+      where: { id: req.user && req.user.id },
+      attributes: ["id", "nickname", "email"]
     })
-    res.status(201).send("ok");
+    if(!user) {
+      return res.status(404).send("계정이 존재하지 않습니다.");
+    }
+    return res.status(200).json(user);
+
   } catch (error) {
     console.error(error);
     next(error);
@@ -38,6 +41,29 @@ router.get('/info/:id', checkAuthenticated, async (req, res, next) => {
     next(error);
   }
 })
+
+router.post('/register', async (req, res, next) => {
+  try {
+    const exUser = await User.findOne({
+      where: {
+        email: req.body.email,
+      },
+    });
+    if(exUser) {
+      return res.status(403).send("이미 사용중인 이메일입니다.");
+    }
+    const hashedPassword = await bcrypt.hash(req.body.password, 12);
+    await User.create({
+      email: req.body.email,
+      nickname: req.body.nickname,
+      password: hashedPassword,
+    })
+    res.status(201).send("회원가입 성공!");
+  } catch (error) {
+    console.error(error);
+    return next(error);
+  }
+});
 
 router.patch('/info', checkAuthenticated, async (req, res, next) => {
   try {
@@ -68,45 +94,19 @@ router.patch('/info', checkAuthenticated, async (req, res, next) => {
   }
 })
 
-router.get('/info', checkAuthenticated, async (req, res, next) => {
+router.delete('/', checkAuthenticated, async (req, res, next) => {
   try {
-    const user = await User.findOne({
-      where: { id: req.user && req.user.id },
-      attributes: ["id", "nickname", "email"]
+    await User.destroy({
+      where: {
+        id: req.user!.id
+      }
     })
-    if(!user) {
-      return res.status(404).send("계정이 존재하지 않습니다.");
-    }
-    return res.status(200).json(user);
-
+    res.status(200).send("ok");
   } catch (error) {
     console.error(error);
     next(error);
   }
 })
-
-router.post('/register', async (req, res, next) => {
-  try {
-    const exUser = await User.findOne({
-      where: {
-        email: req.body.email,
-      },
-    });
-    if(exUser) {
-      return res.status(403).send("이미 사용중인 이메일입니다.");
-    }
-    const hashedPassword = await bcrypt.hash(req.body.password, 12);
-    await User.create({
-      email: req.body.email,
-      nickname: req.body.nickname,
-      password: hashedPassword,
-    })
-    res.status(201).send("회원가입 성공!");
-  } catch (error) {
-    console.error(error);
-    return next(error);
-  }
-});
 
 router.post('/login', (req, res, next) => {
   passport.authenticate('local', (error: Error, user: User, info: { message: string }) => {
