@@ -1,10 +1,9 @@
-import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import * as bcrypt from 'bcrypt';
 
-import User from '../models/user';
+import User from '../../models/user';
 
-const local = () => passport.use(new LocalStrategy({
+const localStrategy = new LocalStrategy({
   usernameField: 'email',
   passwordField: 'password',
 }, async (email, password, done) => {
@@ -24,6 +23,6 @@ const local = () => passport.use(new LocalStrategy({
     console.error(err);
     return done(err);
   }
-}))
+})
 
-export default local;
+export default localStrategy;

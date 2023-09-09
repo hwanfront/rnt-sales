@@ -1,13 +1,11 @@
-import passport from 'passport';
+import User from '../../models/user';
+import Workspace from '../../models/workspace';
+import type { PassportStatic } from 'passport';
 
-import local from './local';
-import User from '../models/user';
-import Workspace from '../models/workspace';
-
-const passportConfig = () => {
+export default (passport: PassportStatic) => {
   passport.serializeUser((user: User, done) => {
     done(null, user.id);
-  });
+  })
 
   passport.deserializeUser<number>(async (id, done) => {
     try {
@@ -27,8 +25,4 @@ const passportConfig = () => {
       done(err);
     }
   });
-
-  local();
-};
-
-export default passportConfig;
+}
