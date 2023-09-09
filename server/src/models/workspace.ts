@@ -1,7 +1,7 @@
 import { CreationOptional, DataTypes, ForeignKey, Model } from "sequelize";
-import sequelize from './sequelize';
-import { DB } from ".";
+import { sequelize } from './sequelize';
 import User from "./user";
+import type { SequelizeDB } from ".";
 
 class Workspace extends Model {
   declare id: CreationOptional<number>;
@@ -31,7 +31,7 @@ Workspace.init({
   collate: 'utf8mb4_general_ci',
 });
 
-export const associate = (db: DB) => {
+export const associate = (db: SequelizeDB) => {
   db.Workspace.belongsTo(db.User, { as: "Owners", foreignKey: "OwnerId" });
   db.Workspace.belongsToMany(db.User, { through: db.WorkspaceMember, as: "Members" });
   db.Workspace.hasMany(db.Revenue, { onDelete: "CASCADE" });

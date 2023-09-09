@@ -1,6 +1,6 @@
 import { CreationOptional, DataTypes, Model } from "sequelize";
-import sequelize from './sequelize';
-import { DB } from ".";
+import { sequelize } from './sequelize';
+import type { SequelizeDB } from ".";
 
 class Revenue extends Model {
   declare id: CreationOptional<number>;
@@ -45,7 +45,7 @@ Revenue.init({
   collate: 'utf8mb4_general_ci',
 });
 
-export const associate = (db: DB) =>  {
+export const associate = (db: SequelizeDB) =>  {
   db.Revenue.belongsTo(db.Workspace);
   db.Revenue.hasOne(db.RevenueDetail, { onDelete: 'CASCADE' });
   db.Revenue.belongsTo(db.Item);

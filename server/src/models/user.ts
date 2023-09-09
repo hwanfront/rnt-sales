@@ -1,6 +1,6 @@
 import { CreateOptions, CreationOptional, DataTypes, Model } from 'sequelize';
-import sequelize from './sequelize';
-import { DB } from '.';
+import { sequelize } from './sequelize';
+import type { SequelizeDB } from ".";
 
 class User extends Model {
   declare id: CreationOptional<number>;
@@ -39,7 +39,7 @@ User.init({
   collate: 'utf8mb4_general_ci',
 })
 
-export const associate = (db: DB) => {
+export const associate = (db: SequelizeDB) => {
   db.User.hasMany(db.Workspace, { as: "owner", foreignKey: "OwnerId" }); 
   db.User.belongsToMany(db.Workspace, { through: db.WorkspaceMember, as: "Workspaces" })
 }

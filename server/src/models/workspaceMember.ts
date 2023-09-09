@@ -1,5 +1,5 @@
 import { CreateOptions, DataTypes, ForeignKey, Model } from "sequelize";
-import sequelize from './sequelize';
+import { sequelize } from './sequelize';
 import User from "./user";
 import Workspace from "./workspace";
 

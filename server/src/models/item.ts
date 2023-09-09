@@ -1,8 +1,9 @@
 import { DataTypes, Model } from "sequelize";
-import sequelize from './sequelize';
-import { DB } from ".";
+import { sequelize } from '.';
+import type { SequelizeDB } from ".";
 
 class Item extends Model {
+  declare month: string;
 }
 
 Item.init({
@@ -20,7 +21,7 @@ Item.init({
   collate: 'utf8mb4_general_ci',
 });
 
-export const associate = (db: DB) => {
+export const associate = (db: SequelizeDB) => {
   db.Item.belongsTo(db.Workspace);
   db.Item.hasOne(db.Revenue, { onDelete: 'SET NULL' });
 }

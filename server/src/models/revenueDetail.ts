@@ -1,6 +1,6 @@
 import { CreationOptional, DataTypes, Model } from "sequelize";
-import sequelize from './sequelize';
-import { DB } from ".";
+import { sequelize } from './sequelize';
+import type { SequelizeDB } from ".";
 
 class RevenueDetail extends Model {
   declare id: CreationOptional<number>;
@@ -30,7 +30,7 @@ RevenueDetail.init({
   collate: 'utf8mb4_general_ci',
 });
 
-export const associate = (db: DB) => {
+export const associate = (db: SequelizeDB) => {
   db.RevenueDetail.belongsTo(db.Revenue);
 }
 
