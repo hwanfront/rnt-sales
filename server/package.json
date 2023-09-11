@@ -18,12 +18,16 @@
     "express-session": "^1.17.3",
     "helmet": "^7.0.0",
     "hpp": "^0.2.3",
+    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.43",
     "morgan": "^1.10.0",
     "mysql2": "^3.6.0",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "sequelize": "^6.32.1",
-    "sequelize-cli": "^6.6.1"
+    "sequelize-cli": "^6.6.1",
+    "winston": "^3.10.0",
+    "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
