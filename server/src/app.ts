@@ -6,6 +6,7 @@ import workspaceRouter from './routes/workspaces';
 
 import loaders from './loaders';
 import config from './config';
+import { logger } from './loaders/logger';
 
 require('dotenv').config();
 
@@ -19,9 +20,9 @@ async function startServer() {
   app.use('/api/workspace', workspaceRouter);
   
   app.listen(config.port, () => {
-    console.log(config.port, '번 포트에서 대기 중');
+    logger.info(`Server listening on port: ${config.port}`);
   }).on('error', (error) => {
-    console.error(error);
+    logger.error(error);
     process.exit(1);
   });
 }

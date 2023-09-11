@@ -37,9 +37,35 @@ export default {
     cookieSecret: process.env.COOKIE_SECRET,
   },
   logs: {
-    level: process.env.LOG_LEVEL || 'silly',
+    transport: {
+      info: {
+        level: "info",
+        filename: `%DATE%.log`, 
+        maxFiles: '7d', 
+      },
+      error: {
+        level: "error",
+        filename: `%DATE%-error.log`, 
+        maxFiles: '30d', 
+      },
+      options: {
+        datePattern: "YYYY-MM-DD-HH",
+        dirname: "logs",
+        zippedArchive: true,
+      }
+    },
+    levels: {
+      error: 0,
+      warn: 1,
+      info: 2,
+    },
+    colors: {
+      error: 'red',
+      warn: 'yellow',
+      info: 'green',
+    }
   },
   api: {
     prefix: '/api'
-  }
+  },
 }
