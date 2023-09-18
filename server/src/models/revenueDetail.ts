@@ -1,15 +1,21 @@
-import { CreationOptional, DataTypes, Model } from "sequelize";
+import { CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import { sequelize } from './sequelize';
 import type { SequelizeDB } from ".";
+import Revenue from "./revenue";
 
-class RevenueDetail extends Model {
+class RevenueDetail extends Model<InferAttributes<RevenueDetail>, InferCreationAttributes<RevenueDetail>> {
   declare id: CreationOptional<number>;
   declare day: number;
   declare comment: string;
-  declare RevenueId: CreationOptional<number>;
+  declare RevenueId: ForeignKey<Revenue['id']>;
 }
 
 RevenueDetail.init({
+  id: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    autoIncrement: true,
+    primaryKey: true
+  },
   day: {
     type: DataTypes.INTEGER,
     validate: {

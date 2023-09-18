@@ -1,13 +1,13 @@
-import { CreateOptions, DataTypes, ForeignKey, Model } from "sequelize";
+import { CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import { sequelize } from './sequelize';
 import User from "./user";
 import Workspace from "./workspace";
 
-class WorkspaceMember extends Model {
+class WorkspaceMember extends Model<InferAttributes<WorkspaceMember>, InferCreationAttributes<WorkspaceMember>> {
   declare userId: ForeignKey<User['id']>;
   declare workspaceId: ForeignKey<Workspace['id']>;
   declare editPermission: boolean;
-  declare isLoggedIn: CreateOptions<Date>;
+  declare isLoggedIn: CreationOptional<Date>;
 }
 
 WorkspaceMember.init({

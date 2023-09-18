@@ -1,12 +1,20 @@
-import { DataTypes, Model } from "sequelize";
+import { CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import { sequelize } from '.';
 import type { SequelizeDB } from ".";
+import Workspace from "./workspace";
 
-class Item extends Model {
-  declare month: string;
+class Item extends Model<InferAttributes<Item>, InferCreationAttributes<Item>> {
+  declare id: CreationOptional<number>;
+  declare name: string;
+  declare WorkspaceId: ForeignKey<Workspace['id']>;
 }
 
 Item.init({
+  id: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    autoIncrement: true,
+    primaryKey: true
+  },
   name: {
     type: DataTypes.STRING(30),
     allowNull: false,

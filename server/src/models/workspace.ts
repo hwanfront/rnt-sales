@@ -1,18 +1,23 @@
-import { CreationOptional, DataTypes, ForeignKey, Model } from "sequelize";
+import { CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import { sequelize } from './sequelize';
 import User from "./user";
 import type { SequelizeDB } from ".";
 
-class Workspace extends Model {
+class Workspace extends Model<InferAttributes<Workspace>, InferCreationAttributes<Workspace>> {
   declare id: CreationOptional<number>;
   declare name: string;
   declare url: string;
   declare OwnerId: ForeignKey<User['id']>;
-  declare readonly createdAt: Date;
-  declare removedAt: Date;
+  declare readonly createdAt: CreationOptional<Date>;
+  declare deletedAt: CreationOptional<Date>;
 }
 
 Workspace.init({
+  id: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    autoIncrement: true,
+    primaryKey: true
+  },
   name: {
     type: DataTypes.STRING(30),
     allowNull: false,
@@ -22,6 +27,8 @@ Workspace.init({
     allowNull: false, 
     unique: true, 
   },
+  createdAt: DataTypes.DATE,
+  deletedAt: DataTypes.DATE,
 }, {
   sequelize,
   modelName: 'Workspace',
