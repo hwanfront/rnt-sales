@@ -14,6 +14,8 @@
     "noEmit": false,
     "outDir": "./dist",
     "typeRoots": ["../node_module/@types", "./node_module/@types", "./types"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
   },
   "ts-node": {
     "files": true
