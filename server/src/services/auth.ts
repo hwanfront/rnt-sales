@@ -45,7 +45,7 @@ class AuthService {
     })(req, res, next);
   }
 
-  public async comparePassword(data: string | Buffer, encrypted: string): Promise<void> {
+  public async comparePassword(data: string | Buffer, encrypted: string) {
     const result = await bcrypt.compare(data, encrypted);
     if(!result) {
       const error = new CustomError(403, '비밀번호가 일치하지 않습니다.');
@@ -54,7 +54,7 @@ class AuthService {
     }
   }
 
-  public async findEmail(email: string): Promise<Express.User> {
+  public async findEmail(email: string) {
     const existUser = await this.userModel.findOne({
       where: { email },
       paranoid: false,
@@ -67,7 +67,7 @@ class AuthService {
     return existUser;
   }
 
-  public async checkEmail(email: string): Promise<void> {
+  public async checkEmail(email: string) {
     const existUser = await this.userModel.findOne({
       where: { email },
       paranoid: false,

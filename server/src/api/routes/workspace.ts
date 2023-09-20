@@ -100,17 +100,18 @@ export default (app: express.Router) => {
     }
   })
   
-  router.delete('/:id', checkAuthenticated,async (req, res, next) => {
+  router.delete('/:id', checkAuthenticated, async (req, res, next) => {
     const logger = Container.get<Logger>('logger');
     const transaction = await sequelize.transaction();
     try {
       const workspaceServiceInst = Container.get(WorkspaceService);
       const workspace = await workspaceServiceInst.getWorkspaceById(req.params.id, ["id", "OwnerId"]);
-      await workspaceServiceInst.checkHasUserAuth(req.user!.id, workspace.OwnerId )
-      await workspaceServiceInst.removeWorkspace(workspace.id);
+      await workspaceServiceInst.checkHasUserAuth(req.user!.id, workspace.OwnerId);
+      await workspaceServiceInst.removeWorkspace(workspace.id, transaction);
       transaction.commit();
       res.status(200).send("Workspace 삭제 성공");
     } catch (error) {
+      transaction.rollback();
       if(error instanceof CustomError) {
         return res.status(error.statusCode).send(error.message);
       }

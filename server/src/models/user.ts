@@ -52,9 +52,9 @@ User.beforeBulkDestroy((options) => {
   options.individualHooks = true;
 })
 
-User.addHook('afterDestroy', async (instance: User) => {
+User.addHook('afterDestroy', async (instance: User, options) => {
   const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
-  await workspaceMemberServiceInst.removeWorkspaceMemberByUserId(instance.id);
+  await workspaceMemberServiceInst.removeWorkspaceMemberByUserId(instance.id, options.transaction!);
 })
 
 export const associate = (db: SequelizeDB) => {

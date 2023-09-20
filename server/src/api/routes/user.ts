@@ -4,6 +4,7 @@ import Container from 'typedi';
 import { Logger } from 'winston';
 
 import { checkAuthenticated } from '../middleware';
+import { sequelize } from '../../models';
 import AuthService from '../../services/auth';
 import UsersService from '../../services/user';
 import CustomError from '../../utils/CustomError';
@@ -89,11 +90,17 @@ export default (app: express.Router) => {
 
   router.delete('/', checkAuthenticated, async (req, res, next) => {
     const logger = Container.get<Logger>('logger');
+    const transaction = await sequelize.transaction();
     try {
       const userServiceInst = Container.get(UsersService);
-      await userServiceInst.removeUser(req.user!.id);
+      await userServiceInst.removeUser(req.user!.id, transaction);
+      transaction.commit();
       res.status(200).send("ok");
     } catch (error) {
+      transaction.rollback();
+      if(error instanceof CustomError) {
+        return res.status(error.statusCode).send(error.message);
+      }
       logger.error(error);
       next(error);
     }

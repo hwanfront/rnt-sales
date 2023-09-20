@@ -4,6 +4,7 @@ import CustomError from '../utils/CustomError';
 
 import type { CreateUserDTO, IUser, UpdateUserDTO } from '../interfaces/IUser';
 import type { Logger } from 'winston';
+import { Transaction } from 'sequelize';
 
 @Service()
 class UsersService {
@@ -48,9 +49,10 @@ class UsersService {
     })
   }
 
-  public async removeUser(id: number) {
+  public async removeUser(id: number, transaction?: Transaction) {
     await this.userModel.destroy({
       where: { id },
+      transaction,
     })
   }
 }

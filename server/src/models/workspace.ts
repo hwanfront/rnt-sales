@@ -47,7 +47,7 @@ Workspace.beforeBulkDestroy((options) => {
 
 Workspace.addHook('afterDestroy', async (instance: Workspace, options) => {
   const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
-  await workspaceMemberServiceInst.removeWorkspaceMemberByWorkspaceId(instance.id);
+  await workspaceMemberServiceInst.removeWorkspaceMemberByWorkspaceId(instance.id, options.transaction!);
 })
 
 export const associate = (db: SequelizeDB) => {

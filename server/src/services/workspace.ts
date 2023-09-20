@@ -91,9 +91,10 @@ class WorkspaceService {
     return await this.workspaceModel.update(workspace, { where: { id } });
   }
 
-  public async removeWorkspace(id: number) {
+  public async removeWorkspace(id: number, transaction?: Transaction) {
     await this.workspaceModel.destroy({
       where: { id },
+      transaction
     })
   }
 }

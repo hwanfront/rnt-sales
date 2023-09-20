@@ -27,25 +27,20 @@ class WorkspaceMemberService {
   }
 
   public async createWorkspaceMember(workspaceMember: CreateWorkspaceMemberDTO, transaction?: Transaction) {
-    this.logger.error('created');
-    const created = await this.workspaceMemberModel.create(workspaceMember, { transaction });
-    this.logger.error(created);
-    if(!created) {
-      const error = new CustomError(401, "Workspace에 대한 권한이 없습니다!");
-      this.logger.error(error.message);
-      throw error;
-    }
+    await this.workspaceMemberModel.create(workspaceMember, { transaction });
   }
 
-  public async removeWorkspaceMemberByWorkspaceId(WorkspaceId: number) {
+  public async removeWorkspaceMemberByWorkspaceId(WorkspaceId: number, transaction?: Transaction) {
     await this.workspaceMemberModel.destroy({
       where: { WorkspaceId },
+      transaction,
     })
   }
 
-  public async removeWorkspaceMemberByUserId(UserId: number) {
+  public async removeWorkspaceMemberByUserId(UserId: number, transaction?: Transaction) {
     await this.workspaceMemberModel.destroy({
       where: { UserId },
+      transaction,
     })
   }
 }
