@@ -1,24 +1,18 @@
 import fs from 'fs';
-import * as winston from 'winston';
-import morgan from 'morgan';
+import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
+import morgan, { StreamOptions } from 'morgan';
 import moment from 'moment';
-import 'moment-timezone';
-import type { StreamOptions } from 'morgan';
 import type { Application } from 'express';
 
 import config from '../config';
 
-moment.tz.setDefault('Asia/Seoul');
-const timeStamp = () => moment().format('YYYY-MM-DD HH:mm:ss');
-
 const logFormat = winston.format.printf((info: winston.Logform.TransformableInfo) => {
-  return `[${timeStamp()}] ${info.level} - ${info.message}`
+  return `[${moment().format('YYYY-MM-DD HH:mm:ss')}] ${info.level} - ${info.message}`
 })
 
-const transport = (level: 'cli' | 'info' | 'error') => {
-  if(level === 'cli') {
-    return new winston.transports.Console({
+const transport = {
+  cli: new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize({ colors: config.logs.colors }),
         winston.format.cli(),
@@ -27,24 +21,26 @@ const transport = (level: 'cli' | 'info' | 'error') => {
         winston.format.simple(),
         logFormat
       )
-    })
-  }
-
-  return new DailyRotateFile({
-    ...config.logs.transport[level],
+    }),
+  info: new DailyRotateFile({
+    ...config.logs.transport.info,
+    ...config.logs.transport.options,
+  }),
+  error: new DailyRotateFile({
+    ...config.logs.transport.error,
     ...config.logs.transport.options,
   })
 }
 
-const transports: winston.transport[] = [transport('cli')];
+const transports: winston.transport[] = [transport.cli];
 
 if(process.env.NODE_ENV === 'development') {
   if(!fs.existsSync(config.logs.transport.options.dirname)) {
     fs.mkdirSync(config.logs.transport.options.dirname);
   }
 
-  transports.push(transport("info"));
-  transports.push(transport("error"));
+  transports.push(transport.info);
+  transports.push(transport.error);
 } 
 
 export const logger = winston.createLogger({
@@ -53,11 +49,11 @@ export const logger = winston.createLogger({
   transports
 });
 
-const stream: StreamOptions = { 
-  write: (message) => logger.info(message)
-}
-
 export default ({ app }: { app: Application }) => {
+  const stream: StreamOptions = { 
+    write: (message) => logger.info(message) 
+  }
+  
   if(process.env.NODE_ENV === "production") {
     app.use(morgan("combined"));
   } else {

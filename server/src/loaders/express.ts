@@ -35,14 +35,9 @@ export default ({ app }: { app: Application }) => {
     secret: process.env.COOKIE_SECRET || '',
     cookie: {
       httpOnly: true,
-    }
-  }
-
-  if(prod) {
-    if(sessionOption.cookie) {
-      sessionOption.cookie.secure = true;
-    }
-    sessionOption.proxy = true;
+      secure: !!prod,
+    },
+    proxy: !!prod,
   }
 
   app.use(session(sessionOption));

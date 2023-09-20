@@ -1,23 +1,19 @@
+import 'reflect-metadata';
+import 'moment-timezone';
 import express from 'express';
-import type { Application } from 'express';
-
-import userRouter from './routes/users';
-import workspaceRouter from './routes/workspaces';
+import moment from 'moment-timezone';
 
 import loaders from './loaders';
 import config from './config';
 import { logger } from './loaders/logger';
 
 require('dotenv').config();
+moment.tz.setDefault('Asia/Seoul');
 
 async function startServer() {
-  const app: Application = express();
+  const app = express();
 
   await loaders({ expressApp: app });
-  
-  // router
-  app.use('/api/user', userRouter);
-  app.use('/api/workspace', workspaceRouter);
   
   app.listen(config.port, () => {
     logger.info(`Server listening on port: ${config.port}`);
@@ -25,6 +21,7 @@ async function startServer() {
     logger.error(error);
     process.exit(1);
   });
+
 }
 
 startServer();
