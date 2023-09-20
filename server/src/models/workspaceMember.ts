@@ -4,8 +4,8 @@ import User from "./user";
 import Workspace from "./workspace";
 
 class WorkspaceMember extends Model<InferAttributes<WorkspaceMember>, InferCreationAttributes<WorkspaceMember>> {
-  declare userId: ForeignKey<User['id']>;
-  declare workspaceId: ForeignKey<Workspace['id']>;
+  declare UserId: ForeignKey<User['id']>;
+  declare WorkspaceId: ForeignKey<Workspace['id']>;
   declare editPermission: boolean;
   declare isLoggedIn: CreationOptional<Date>;
 }
