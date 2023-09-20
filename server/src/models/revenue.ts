@@ -1,17 +1,24 @@
-import { CreationOptional, DataTypes, Model } from "sequelize";
-import sequelize from './sequelize';
-import { DB } from ".";
+import { CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model } from "sequelize";
+import { sequelize } from './sequelize';
+import type { SequelizeDB } from ".";
+import Workspace from "./workspace";
+import Item from "./item";
 
-class Revenue extends Model {
+class Revenue extends Model<InferAttributes<Revenue>, InferCreationAttributes<Revenue>> {
   declare id: CreationOptional<number>;
   declare month: number;
   declare company: string;
   declare amount: string;
-  declare WorkspaceId: CreationOptional<number>;
-  declare ItemId: CreationOptional<number>;
+  declare WorkspaceId: ForeignKey<Workspace['id']>;
+  declare ItemId: ForeignKey<Item['id']>;
 }
 
 Revenue.init({
+  id: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    autoIncrement: true,
+    primaryKey: true
+  },
   month: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -39,13 +46,15 @@ Revenue.init({
   },
 }, {
   sequelize,
+  timestamps: false,
   modelName: 'Revenue',
   tableName: 'revenues',
+  paranoid: false,
   charset: 'utf8mb4',
   collate: 'utf8mb4_general_ci',
 });
 
-export const associate = (db: DB) =>  {
+export const associate = (db: SequelizeDB) =>  {
   db.Revenue.belongsTo(db.Workspace);
   db.Revenue.hasOne(db.RevenueDetail, { onDelete: 'CASCADE' });
   db.Revenue.belongsTo(db.Item);

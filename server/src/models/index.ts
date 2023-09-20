@@ -1,13 +1,13 @@
-import User, { associate as associateUser }  from './user';
-import Revenue, { associate as associateRevenue }  from './revenue';
-import RevenueDetail, { associate as associateRevenueDetail }  from './revenueDetail';
-import Item, { associate as associateItem }  from './item';
+export * from './sequelize';
+
+import User, { associate as associateUser } from './user';
+import Revenue, { associate as associateRevenue } from './revenue';
+import RevenueDetail, { associate as associateRevenueDetail } from './revenueDetail';
+import Item, { associate as associateItem } from './item';
 import Workspace, { associate as associateWorkspace } from './workspace';
 import WorkspaceMember from './workspaceMember';
 
-export * from './sequelize';
-
-const db = { 
+const sequelizeDB = { 
   User,
   Revenue,
   RevenueDetail,
@@ -16,10 +16,10 @@ const db = {
   WorkspaceMember
 };
 
-export type DB = typeof db;
+export type SequelizeDB = typeof sequelizeDB;
 
-associateUser(db);
-associateRevenue(db);
-associateRevenueDetail(db);
-associateItem(db);
-associateWorkspace(db);
+associateUser(sequelizeDB);
+associateRevenue(sequelizeDB);
+associateRevenueDetail(sequelizeDB);
+associateItem(sequelizeDB);
+associateWorkspace(sequelizeDB);

@@ -1,17 +1,24 @@
-import { CreateOptions, CreationOptional, DataTypes, Model } from 'sequelize';
-import sequelize from './sequelize';
-import { DB } from '.';
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
+import { sequelize } from './sequelize';
+import type { SequelizeDB } from ".";
+import Container from 'typedi';
+import WorkspaceMemberService from '../services/WorkspaceMember';
 
-class User extends Model {
+class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>;
   declare nickname: string;
   declare email: string;
   declare password: string;
-  declare readonly createdAt: CreateOptions<Date>;
-  declare deletedAt: CreateOptions<Date>;
+  declare readonly createdAt: CreationOptional<Date>;
+  declare deletedAt: CreationOptional<Date>;
 }
 
 User.init({
+  id: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    autoIncrement: true,
+    primaryKey: true
+  },
   nickname: {
     type: DataTypes.STRING(20),
     allowNull: false,
@@ -30,6 +37,8 @@ User.init({
     type: DataTypes.STRING(100),
     allowNull: false,
   },
+  createdAt: DataTypes.DATE,
+  deletedAt: DataTypes.DATE,
 }, { 
   sequelize,
   modelName: 'User',
@@ -39,7 +48,16 @@ User.init({
   collate: 'utf8mb4_general_ci',
 })
 
-export const associate = (db: DB) => {
+User.beforeBulkDestroy((options) => {
+  options.individualHooks = true;
+})
+
+User.addHook('afterDestroy', async (instance: User, options) => {
+  const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
+  await workspaceMemberServiceInst.removeWorkspaceMemberByUserId(instance.id, options.transaction!);
+})
+
+export const associate = (db: SequelizeDB) => {
   db.User.hasMany(db.Workspace, { as: "owner", foreignKey: "OwnerId" }); 
   db.User.belongsToMany(db.Workspace, { through: db.WorkspaceMember, as: "Workspaces" })
 }
