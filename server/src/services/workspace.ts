@@ -13,6 +13,19 @@ class WorkspaceService {
     @Inject('logger') private logger: Logger,
   ){}
 
+  public async getWorkspaceIdByUrl(url: string) {
+    const workspace = await this.workspaceModel.findOne({
+      where: { url },
+      attributes: ["id"],
+    })
+    if(!workspace) {
+      const error = new CustomError(404, "존재하지 않는 Workspace입니다.");
+      this.logger.error(error.message);
+      throw error;
+    }
+    return workspace.id;
+  }
+
   public async getWorkspaceById(id: string, attributes?: Array<keyof Partial<IWorkspace>>) {
     const workspace = await this.workspaceModel.findOne({
       where: { id },
@@ -56,7 +69,7 @@ class WorkspaceService {
   public async getWorkspaceByUrl(url: string) {
     const workspace = await this.workspaceModel.findOne({
       where: { url },
-      attributes: ["id", "name", "url", "createdAt", "updatedAt"],
+      attributes: ["id", "name", "url", "createdAt", "updatedAt", "OwnerId"],
       include: [{
         model: this.userModel,
         as: "Owners",
@@ -84,7 +97,13 @@ class WorkspaceService {
   }
 
   public async createWorkspace(workspace: CreateWorkspaceDTO, transaction?: Transaction) {
-    return await this.workspaceModel.create(workspace, { transaction });
+    const created = await this.workspaceModel.create(workspace, { transaction });
+    if(!created) {
+      const error = new CustomError(403, "이미 사용중인 url입니다.");
+      this.logger.error(error.message);
+      throw error;
+    }
+    return created;
   }
 
   public async updateWorkspace(id: number, workspace: UpdateWorkspaceDTO) {

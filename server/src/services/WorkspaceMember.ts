@@ -14,6 +14,20 @@ class WorkspaceMemberService {
     @Inject('logger') private logger: Logger,
   ){}
 
+  public async checkMemberInWorkspace(WorkspaceId: number, UserId: number) {
+    const isMember = await this.workspaceMemberModel.findOne({
+      where: {
+        WorkspaceId,
+        UserId
+      }
+    })
+    if(isMember) {
+      const error = new CustomError(401, "이미 Workspace에 회원이 존재합니다.");
+      this.logger.error(error.message);
+      throw error;
+    }
+  }
+
   public async getMembersByWorkspaceId(WorkspaceId: number) {
     return await this.workspaceModel.findOne({
       where: { id: WorkspaceId },
