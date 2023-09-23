@@ -8,9 +8,25 @@ import { Transaction } from 'sequelize';
 @Service()
 class WorkspaceMemberService {
   constructor(
+    @Inject('userModel') private userModel: Models.User,
+    @Inject('workspaceModel') private workspaceModel: Models.Workspace,
     @Inject('workspaceMemberModel') private workspaceMemberModel: Models.WorkspaceMember,
     @Inject('logger') private logger: Logger,
   ){}
+
+  public async getMembersByWorkspaceId(WorkspaceId: number) {
+    return await this.workspaceModel.findOne({
+      where: { id: WorkspaceId },
+      attributes: ["id", "name", "url", "OwnerId"],
+      include: [{
+        model: this.userModel,
+        as: "Members",
+        attributes: ["id", "nickname", "email"],
+        through: { attributes: [] },
+        order: [["nickname", "DESC"]],
+      }],
+    });
+  }
 
   public async checkMemberAuthInWorkspace(WorkspaceId: number, UserId: number) {
     const isMember = await this.workspaceMemberModel.findOne({
