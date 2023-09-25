@@ -2,7 +2,7 @@ import { Service, Inject } from 'typedi';
 
 import type{ Logger } from 'winston';
 import CustomError from '../utils/CustomError';
-import { CreateWorkspaceMemberDTO } from '../interfaces/IWorkspaceMember';
+import { CreateWorkspaceMemberDTO, UpdateWorkspaceMemberDTO } from '../interfaces/IWorkspaceMember';
 import { Transaction } from 'sequelize';
 
 @Service()
@@ -50,7 +50,7 @@ class WorkspaceMemberService {
         model: this.userModel,
         as: "Members",
         attributes: ["id", "nickname", "email"],
-        through: { attributes: [] },
+        through: { attributes: ["editPermission"] },
         order: [["nickname", "DESC"]],
       }],
     });
@@ -72,6 +72,15 @@ class WorkspaceMemberService {
 
   public async createWorkspaceMember(workspaceMember: CreateWorkspaceMemberDTO, transaction?: Transaction) {
     await this.workspaceMemberModel.create(workspaceMember, { transaction });
+  }
+
+  public async updateMemberEditPermission(workspaceMember: UpdateWorkspaceMemberDTO , WorkspaceId: number, UserId: number) {
+    await this.workspaceMemberModel.update(workspaceMember, {
+      where: {
+        WorkspaceId,
+        UserId,
+      }
+    })
   }
 
   public async removeMemberInWorkspace(WorkspaceId: number, UserId: number) {

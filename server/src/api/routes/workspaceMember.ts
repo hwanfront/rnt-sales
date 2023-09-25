@@ -76,7 +76,27 @@ export default (app: express.Router) => {
     }
   })
 
-  router.post('/:id', checkAuthenticated, async (req, res, next) => {
+  router.post('/:workspace/member/:id', checkAuthenticated, async (req, res, next) => {
+    const logger = Container.get<Logger>('logger');
+    try {
+      const workspaceServiceInst = Container.get(WorkspaceService);
+      const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.workspace);
+      await workspaceServiceInst.checkHasUserAuth(req.user!.id, workspace.OwnerId);
+      const userServiceInst = Container.get(UsersService);
+      const user = await userServiceInst.getUserById(req.params.id);
+      const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
+      await workspaceMemberServiceInst.checkNoMemberInWorkspace(workspace.id, user.id);
+      await workspaceMemberServiceInst.updateMemberEditPermission({
+        editPermission: req.body.editPermission
+      }, workspace.id, user.id);
+      res.status(201).send("Workspace Member 수정권한 변경 완료");
+    } catch (error) {
+      if(error instanceof CustomError) {
+        return res.status(error.statusCode).send(error.message);
+      }
+      logger.error(error);
+      return next(error);
+    }
 
   })
 }

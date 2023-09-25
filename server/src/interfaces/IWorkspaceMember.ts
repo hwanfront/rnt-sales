@@ -5,3 +5,4 @@ export interface IWorkspaceMember {
 }
 
 export interface CreateWorkspaceMemberDTO extends IWorkspaceMember {};
+export interface UpdateWorkspaceMemberDTO extends Omit<IWorkspaceMember, "WorkspaceId" | "UserId"> {};
