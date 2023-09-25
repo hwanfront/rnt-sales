@@ -18,7 +18,7 @@ export default (app: express.Router) => {
     const logger = Container.get<Logger>('logger');
     try {
       const userServiceInst = Container.get(UsersService);
-      const user = userServiceInst.getUserById(req.user!.id, ["id", "nickname", "email"])
+      const user = await userServiceInst.getUserById(req.user!.id, ["id", "nickname", "email"])
       return res.status(200).json(user);
     } catch (error) {
       if(error instanceof CustomError) {
@@ -33,7 +33,7 @@ export default (app: express.Router) => {
     const logger = Container.get<Logger>('logger');
     try {
       const userServiceInst = Container.get(UsersService);
-      const user = userServiceInst.getUserById(req.params.id, ["id", "nickname", "email"]);
+      const user = await userServiceInst.getUserById(req.params.id, ["id", "nickname", "email"]);
       return res.status(200).json(user);
     } catch (error) {
       if(error instanceof CustomError) {

@@ -58,8 +58,8 @@ User.addHook('afterDestroy', async (instance: User, options) => {
 })
 
 export const associate = (db: SequelizeDB) => {
-  db.User.hasMany(db.Workspace, { as: "owner", foreignKey: "OwnerId" }); 
-  db.User.belongsToMany(db.Workspace, { through: db.WorkspaceMember, as: "Workspaces" })
+  db.User.hasMany(db.Workspace, { as: "owners", foreignKey: "ownerId" }); 
+  db.User.belongsToMany(db.Workspace, { through: db.WorkspaceMember, as: "workspaces", foreignKey: "userId" })
 }
 
 export default User;

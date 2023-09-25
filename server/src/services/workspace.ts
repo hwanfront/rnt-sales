@@ -48,13 +48,13 @@ class WorkspaceService {
   }
 
   public async getUserWithWorkspaces(id: number) {
-    const userWithWorkspaces = await this.userModel.findOne({
+    const userWithWorkspaces = await this.userModel.findAll({
       where: { id },
       attributes: ["nickname", "email"],
       include: [{
         model: this.workspaceModel,
-        as: "Workspaces",
-        attributes: ["id", "name", "url", "updatedAt", "OwnerId"],
+        as: "workspaces",
+        attributes: ["id", "name", "url", "updatedAt", "ownerId"],
         order: [["updatedAt", "DESC"]],
       }],
     })
@@ -69,10 +69,10 @@ class WorkspaceService {
   public async getWorkspaceByUrl(url: string) {
     const workspace = await this.workspaceModel.findOne({
       where: { url },
-      attributes: ["id", "name", "url", "createdAt", "updatedAt", "OwnerId"],
+      attributes: ["id", "name", "url", "createdAt", "updatedAt", "ownerId"],
       include: [{
         model: this.userModel,
-        as: "Owners",
+        as: "owners",
         attributes: ["nickname", "email"]
       }]
     })

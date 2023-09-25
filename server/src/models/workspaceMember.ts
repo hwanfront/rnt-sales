@@ -4,13 +4,27 @@ import User from "./user";
 import Workspace from "./workspace";
 
 class WorkspaceMember extends Model<InferAttributes<WorkspaceMember>, InferCreationAttributes<WorkspaceMember>> {
-  declare UserId: ForeignKey<User['id']>;
-  declare WorkspaceId: ForeignKey<Workspace['id']>;
+  declare userId: ForeignKey<User['id']>;
+  declare workspaceId: ForeignKey<Workspace['id']>;
   declare editPermission: boolean;
   declare isLoggedIn: CreationOptional<Date>;
 }
 
 WorkspaceMember.init({
+  userId: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    references: {
+      model: User,
+      key: 'id',
+    }
+  },
+  workspaceId: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    references: {
+      model: Workspace,
+      key: 'id',
+    }
+  },
   editPermission: {
     type: DataTypes.BOOLEAN,
     allowNull: false,

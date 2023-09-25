@@ -7,7 +7,7 @@ class RevenueDetail extends Model<InferAttributes<RevenueDetail>, InferCreationA
   declare id: CreationOptional<number>;
   declare day: number;
   declare comment: string;
-  declare RevenueId: ForeignKey<Revenue['id']>;
+  declare revenueId: ForeignKey<Revenue['id']>;
 }
 
 RevenueDetail.init({
@@ -26,6 +26,13 @@ RevenueDetail.init({
   comment: {
     type: DataTypes.TEXT,
   },
+  revenueId: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    references: {
+      model: Revenue,
+      key: 'id',
+    }
+  }
 }, {
   sequelize,
   timestamps: false,
@@ -37,7 +44,7 @@ RevenueDetail.init({
 });
 
 export const associate = (db: SequelizeDB) => {
-  db.RevenueDetail.belongsTo(db.Revenue);
+  db.RevenueDetail.belongsTo(db.Revenue, { foreignKey: "revenueId" });
 }
 
 export default RevenueDetail;

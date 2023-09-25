@@ -57,12 +57,12 @@ export default (app: express.Router) => {
       const workspace = await workspaceServiceInst.createWorkspace({
         name: req.body.name,
         url: req.body.url,
-        OwnerId: req.user!.id,
+        ownerId: req.user!.id,
       }, transaction);
       const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
       await workspaceMemberServiceInst.createWorkspaceMember({
-        UserId: req.user!.id,
-        WorkspaceId: workspace.id,
+        userId: req.user!.id,
+        workspaceId: workspace.id,
         editPermission: true,
       }, transaction);
       transaction.commit();
@@ -81,14 +81,14 @@ export default (app: express.Router) => {
     const logger = Container.get<Logger>('logger');
     try {
       const workspaceServiceInst = Container.get(WorkspaceService);
-      const workspace = await workspaceServiceInst.getWorkspaceById(req.params.id, ["id", "OwnerId"]);
-      workspaceServiceInst.checkHasUserAuth(req.user!.id, workspace.OwnerId);
+      const workspace = await workspaceServiceInst.getWorkspaceById(req.params.id, ["id", "ownerId"]);
+      workspaceServiceInst.checkHasUserAuth(req.user!.id, workspace.ownerId);
       const userServiceInst = Container.get(UsersService);
       const newOwnerId = await userServiceInst.getUserIdByEmail(req.body.newOwnerEmail);
       await workspaceServiceInst.updateWorkspace(workspace.id, {
         name: req.body.name,
         url: req.body.url,
-        OwnerId: newOwnerId
+        ownerId: newOwnerId
       })
       res.status(201).send("Workspace 수정 성공");
     } catch (error) {
@@ -105,8 +105,8 @@ export default (app: express.Router) => {
     const transaction = await sequelize.transaction();
     try {
       const workspaceServiceInst = Container.get(WorkspaceService);
-      const workspace = await workspaceServiceInst.getWorkspaceById(req.params.id, ["id", "OwnerId"]);
-      await workspaceServiceInst.checkHasUserAuth(req.user!.id, workspace.OwnerId);
+      const workspace = await workspaceServiceInst.getWorkspaceById(req.params.id, ["id", "ownerId"]);
+      await workspaceServiceInst.checkHasUserAuth(req.user!.id, workspace.ownerId);
       await workspaceServiceInst.removeWorkspace(workspace.id, transaction);
       transaction.commit();
       res.status(200).send("Workspace 삭제 성공");

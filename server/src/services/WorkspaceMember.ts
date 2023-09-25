@@ -14,11 +14,11 @@ class WorkspaceMemberService {
     @Inject('logger') private logger: Logger,
   ){}
 
-  public async checkNoMemberInWorkspace(WorkspaceId: number, UserId: number) {
+  public async checkNoMemberInWorkspace(workspaceId: number, userId: number) {
     const isMember = await this.workspaceMemberModel.findOne({
       where: {
-        WorkspaceId,
-        UserId
+        workspaceId,
+        userId
       }
     })
     if(!isMember) {
@@ -28,11 +28,11 @@ class WorkspaceMemberService {
     }
   }
 
-  public async checkMemberInWorkspace(WorkspaceId: number, UserId: number) {
+  public async checkMemberInWorkspace(workspaceId: number, userId: number) {
     const isMember = await this.workspaceMemberModel.findOne({
       where: {
-        WorkspaceId,
-        UserId
+        workspaceId,
+        userId
       }
     })
     if(isMember) {
@@ -45,22 +45,22 @@ class WorkspaceMemberService {
   public async getMembersByWorkspaceId(WorkspaceId: number) {
     return await this.workspaceModel.findOne({
       where: { id: WorkspaceId },
-      attributes: ["id", "name", "url", "OwnerId"],
+      attributes: ["id", "name", "url", "ownerId"],
       include: [{
         model: this.userModel,
-        as: "Members",
+        as: "members",
         attributes: ["id", "nickname", "email"],
-        through: { attributes: ["editPermission"] },
+        through: { as: "status" , attributes: ["editPermission"] },
         order: [["nickname", "DESC"]],
       }],
     });
   }
 
-  public async checkMemberAuthInWorkspace(WorkspaceId: number, UserId: number) {
+  public async checkMemberAuthInWorkspace(workspaceId: number, userId: number) {
     const isMember = await this.workspaceMemberModel.findOne({
       where: {
-        WorkspaceId,
-        UserId
+        workspaceId,
+        userId
       }
     })
     if(!isMember) {
@@ -74,34 +74,34 @@ class WorkspaceMemberService {
     await this.workspaceMemberModel.create(workspaceMember, { transaction });
   }
 
-  public async updateMemberEditPermission(workspaceMember: UpdateWorkspaceMemberDTO , WorkspaceId: number, UserId: number) {
+  public async updateMemberEditPermission(workspaceMember: UpdateWorkspaceMemberDTO , workspaceId: number, userId: number) {
     await this.workspaceMemberModel.update(workspaceMember, {
       where: {
-        WorkspaceId,
-        UserId,
+        workspaceId,
+        userId,
       }
     })
   }
 
-  public async removeMemberInWorkspace(WorkspaceId: number, UserId: number) {
+  public async removeMemberInWorkspace(workspaceId: number, userId: number) {
     await this.workspaceMemberModel.destroy({
       where: {
-        WorkspaceId,
-        UserId,
+        workspaceId,
+        userId,
       }
     })
   }
 
-  public async removeWorkspaceMemberByWorkspaceId(WorkspaceId: number, transaction?: Transaction) {
+  public async removeWorkspaceMemberByWorkspaceId(workspaceId: number, transaction?: Transaction) {
     await this.workspaceMemberModel.destroy({
-      where: { WorkspaceId },
+      where: { workspaceId },
       transaction,
     })
   }
 
-  public async removeWorkspaceMemberByUserId(UserId: number, transaction?: Transaction) {
+  public async removeWorkspaceMemberByUserId(userId: number, transaction?: Transaction) {
     await this.workspaceMemberModel.destroy({
-      where: { UserId },
+      where: { userId },
       transaction,
     })
   }

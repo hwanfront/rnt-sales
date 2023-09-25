@@ -6,7 +6,7 @@ import Workspace from "./workspace";
 class Item extends Model<InferAttributes<Item>, InferCreationAttributes<Item>> {
   declare id: CreationOptional<number>;
   declare name: string;
-  declare WorkspaceId: ForeignKey<Workspace['id']>;
+  declare workspaceId: ForeignKey<Workspace['id']>;
 }
 
 Item.init({
@@ -19,6 +19,13 @@ Item.init({
     type: DataTypes.STRING(30),
     allowNull: false,
   },
+  workspaceId: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    references: {
+      model: Workspace,
+      key: 'id',
+    }
+  }
 }, {
   sequelize,
   timestamps: false,
@@ -30,8 +37,8 @@ Item.init({
 });
 
 export const associate = (db: SequelizeDB) => {
-  db.Item.belongsTo(db.Workspace);
-  db.Item.hasOne(db.Revenue, { onDelete: 'SET NULL' });
+  db.Item.belongsTo(db.Workspace, { foreignKey: "workspaceId" });
+  db.Item.hasOne(db.Revenue, { foreignKey: "itemId", onDelete: 'SET NULL' });
 }
 
 export default Item;

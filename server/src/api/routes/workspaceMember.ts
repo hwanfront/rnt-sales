@@ -35,14 +35,14 @@ export default (app: express.Router) => {
     try {
       const workspaceServiceInst = Container.get(WorkspaceService);
       const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.workspace);
-      await workspaceServiceInst.checkHasUserAuth(req.user!.id, workspace.OwnerId);
+      await workspaceServiceInst.checkHasUserAuth(req.user!.id, workspace.ownerId);
       const userServiceInst = Container.get(UsersService);
-      const UserId = await userServiceInst.getUserIdByEmail(req.body.email);
+      const userId = await userServiceInst.getUserIdByEmail(req.body.email);
       const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
-      await workspaceMemberServiceInst.checkMemberInWorkspace(workspace.id, UserId);
+      await workspaceMemberServiceInst.checkMemberInWorkspace(workspace.id, userId);
       await workspaceMemberServiceInst.createWorkspaceMember({
-        WorkspaceId: workspace.id,
-        UserId,
+        workspaceId: workspace.id,
+        userId,
         editPermission: false,
       })
       res.status(201).send("Workspace Member 추가 성공");
@@ -60,7 +60,7 @@ export default (app: express.Router) => {
     try {
       const workspaceServiceInst = Container.get(WorkspaceService);
       const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.workspace);
-      await workspaceServiceInst.checkHasUserAuth(req.user!.id, workspace.OwnerId);
+      await workspaceServiceInst.checkHasUserAuth(req.user!.id, workspace.ownerId);
       const userServiceInst = Container.get(UsersService);
       const user = await userServiceInst.getUserById(req.params.id);
       const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
@@ -81,7 +81,7 @@ export default (app: express.Router) => {
     try {
       const workspaceServiceInst = Container.get(WorkspaceService);
       const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.workspace);
-      await workspaceServiceInst.checkHasUserAuth(req.user!.id, workspace.OwnerId);
+      await workspaceServiceInst.checkHasUserAuth(req.user!.id, workspace.ownerId);
       const userServiceInst = Container.get(UsersService);
       const user = await userServiceInst.getUserById(req.params.id);
       const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);

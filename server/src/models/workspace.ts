@@ -1,8 +1,7 @@
-import { BelongsToManyRemoveAssociationsMixin, CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model } from "sequelize";
+import { CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import { sequelize } from './sequelize';
 import User from "./user";
 import type { SequelizeDB } from ".";
-import WorkspaceMember from "./workspaceMember";
 import Container from "typedi";
 import WorkspaceMemberService from "../services/WorkspaceMember";
 
@@ -10,7 +9,7 @@ class Workspace extends Model<InferAttributes<Workspace>, InferCreationAttribute
   declare id: CreationOptional<number>;
   declare name: string;
   declare url: string;
-  declare OwnerId: ForeignKey<User['id']>;
+  declare ownerId: ForeignKey<User['id']>;
   declare readonly createdAt: CreationOptional<Date>;
   declare deletedAt: CreationOptional<Date>;
 }
@@ -29,6 +28,13 @@ Workspace.init({
     type: DataTypes.STRING(30),
     allowNull: false, 
     unique: true, 
+  },
+  ownerId: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    references: {
+      model: User,
+      key: 'id',
+    }
   },
   createdAt: DataTypes.DATE,
   deletedAt: DataTypes.DATE,
@@ -51,10 +57,10 @@ Workspace.addHook('afterDestroy', async (instance: Workspace, options) => {
 })
 
 export const associate = (db: SequelizeDB) => {
-  db.Workspace.belongsTo(db.User, { as: "Owners", foreignKey: "OwnerId" });
-  db.Workspace.belongsToMany(db.User, { through: db.WorkspaceMember, as: "Members", onDelete: 'CASCADE', hooks: true });
-  db.Workspace.hasMany(db.Revenue, { onDelete: "CASCADE" });
-  db.Workspace.hasMany(db.Item, { onDelete: "CASCADE" });
+  db.Workspace.belongsTo(db.User, { as: "owners", foreignKey: "ownerId" });
+  db.Workspace.belongsToMany(db.User, { through: db.WorkspaceMember, as: "members", onDelete: 'CASCADE', hooks: true, foreignKey: "workspaceId" });
+  db.Workspace.hasMany(db.Revenue, { onDelete: "CASCADE", foreignKey: "workspaceId" });
+  db.Workspace.hasMany(db.Item, { onDelete: "CASCADE", foreignKey: "workspaceId" });
 }
 
 export default Workspace;
