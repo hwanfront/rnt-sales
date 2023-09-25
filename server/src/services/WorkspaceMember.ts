@@ -14,6 +14,20 @@ class WorkspaceMemberService {
     @Inject('logger') private logger: Logger,
   ){}
 
+  public async checkNoMemberInWorkspace(WorkspaceId: number, UserId: number) {
+    const isMember = await this.workspaceMemberModel.findOne({
+      where: {
+        WorkspaceId,
+        UserId
+      }
+    })
+    if(!isMember) {
+      const error = new CustomError(401, "Workspace에 회원이 존재하지 않습니다.");
+      this.logger.error(error.message);
+      throw error;
+    }
+  }
+
   public async checkMemberInWorkspace(WorkspaceId: number, UserId: number) {
     const isMember = await this.workspaceMemberModel.findOne({
       where: {
@@ -58,6 +72,15 @@ class WorkspaceMemberService {
 
   public async createWorkspaceMember(workspaceMember: CreateWorkspaceMemberDTO, transaction?: Transaction) {
     await this.workspaceMemberModel.create(workspaceMember, { transaction });
+  }
+
+  public async removeMemberInWorkspace(WorkspaceId: number, UserId: number) {
+    await this.workspaceMemberModel.destroy({
+      where: {
+        WorkspaceId,
+        UserId,
+      }
+    })
   }
 
   public async removeWorkspaceMemberByWorkspaceId(WorkspaceId: number, transaction?: Transaction) {
