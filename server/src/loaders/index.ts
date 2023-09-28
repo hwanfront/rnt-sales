@@ -8,14 +8,15 @@ import dependencyInjector from './dependencyInjector';
 import routerLoader from './router';
 
 import type { Application } from 'express';
+
 export default async ({ expressApp }: { expressApp: Application }) => {
   moment.tz.setDefault('Asia/Seoul');
 
-  await loggerLoader({ app: expressApp });
+  loggerLoader({ app: expressApp });
   logger.info('Logger loaded');
   
-  await dependencyInjector();
-  logger.info('')
+  dependencyInjector();
+  logger.info('di container created')
 
   await sequelizeSyncLoader({ force: false })
   logger.info('DB loaded and connected');
@@ -23,12 +24,12 @@ export default async ({ expressApp }: { expressApp: Application }) => {
   passportConfig();
   logger.info('passport config loaded');
 
-  await expressLoader({ app: expressApp });
+  expressLoader({ app: expressApp });
   logger.info('Express loaded');
 
-  await passportLoader({ app: expressApp });
+  passportLoader({ app: expressApp });
   logger.info('Passport loaded');
 
-  await routerLoader({ app: expressApp });
+  routerLoader({ app: expressApp });
   logger.info('router connected');
 }
