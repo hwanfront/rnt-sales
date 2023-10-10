@@ -1,9 +1,12 @@
 import { Service, Inject } from 'typedi';
-
-import type{ Logger } from 'winston';
-import CustomError from '../utils/CustomError';
-import { CreateWorkspaceMemberDTO, UpdateWorkspaceMemberDTO } from '../interfaces/IWorkspaceMember';
 import { Transaction } from 'sequelize';
+
+import CustomError from '../utils/CustomError';
+
+import type { Logger } from 'winston';
+import type { CreateWorkspaceMemberDTO, UpdateWorkspaceMemberDTO } from '../interfaces/IWorkspaceMember';
+import WorkspaceMember from '../models/workspaceMember';
+import Workspace from '../models/workspace';
 
 @Service()
 class WorkspaceMemberService {
@@ -14,36 +17,27 @@ class WorkspaceMemberService {
     @Inject('logger') private logger: Logger,
   ){}
 
-  public async checkNoMemberInWorkspace(workspaceId: number, userId: number) {
-    const isMember = await this.workspaceMemberModel.findOne({
+  public async getUserInWorkspaceMember(workspaceId: number, userId: number): Promise<WorkspaceMember | null> {
+    const member = await this.workspaceMemberModel.findOne({
       where: {
         workspaceId,
         userId
       }
     })
-    if(!isMember) {
-      const error = new CustomError(401, "Workspace에 회원이 존재하지 않습니다.");
-      this.logger.error(error.message);
-      throw error;
+
+    return member || null;
+  }
+
+  public async createWorkspaceMember(workspaceMember: CreateWorkspaceMemberDTO, transaction?: Transaction): Promise<void> {
+    const createdMember = await this.workspaceMemberModel.create(workspaceMember, { transaction });
+
+    if(!createdMember) {
+      throw new CustomError(401, "Workspace에 추가 실패!");
     }
   }
 
-  public async checkMemberInWorkspace(workspaceId: number, userId: number) {
-    const isMember = await this.workspaceMemberModel.findOne({
-      where: {
-        workspaceId,
-        userId
-      }
-    })
-    if(isMember) {
-      const error = new CustomError(401, "이미 Workspace에 회원이 존재합니다.");
-      this.logger.error(error.message);
-      throw error;
-    }
-  }
-
-  public async getMembersByWorkspaceId(WorkspaceId: number) {
-    return await this.workspaceModel.findOne({
+  public async getWrokspaceMembersByWorkspaceId(WorkspaceId: number): Promise<Workspace> {
+    const workspaceMembers = await this.workspaceModel.findOne({
       where: { id: WorkspaceId },
       attributes: ["id", "name", "url", "ownerId"],
       include: [{
@@ -54,52 +48,48 @@ class WorkspaceMemberService {
         order: [["nickname", "DESC"]],
       }],
     });
+
+    if(!workspaceMembers) {
+      throw new CustomError(401, "Workspace가 존재하지 않습니다.");
+    }
+
+    return workspaceMembers;
   }
 
-  public async checkMemberAuthInWorkspace(workspaceId: number, userId: number) {
-    const isMember = await this.workspaceMemberModel.findOne({
+  public async removeMemberInWorkspace(workspaceId: number, userId: number): Promise<void> {
+    const removed = await this.workspaceMemberModel.destroy({
       where: {
         workspaceId,
-        userId
+        userId,
       }
     })
-    if(!isMember) {
-      const error = new CustomError(401, "Workspace에 대한 권한이 없습니다!");
-      this.logger.error(error.message);
-      throw error;
+
+    if(!removed) {
+      throw new CustomError(400, "Workspace 멤버 삭제 실패!")
     }
   }
 
-  public async createWorkspaceMember(workspaceMember: CreateWorkspaceMemberDTO, transaction?: Transaction) {
-    await this.workspaceMemberModel.create(workspaceMember, { transaction });
-  }
-
-  public async updateMemberEditPermission(workspaceMember: UpdateWorkspaceMemberDTO , workspaceId: number, userId: number) {
-    await this.workspaceMemberModel.update(workspaceMember, {
+  public async updateMemberEditPermission(workspaceMember: UpdateWorkspaceMemberDTO , workspaceId: number, userId: number): Promise<void> {
+    const updated = await this.workspaceMemberModel.update(workspaceMember, {
       where: {
         workspaceId,
         userId,
       }
     })
+
+    if(!updated) {
+      throw new CustomError(400, "Workspace 멤버 수정 실패!")
+    }
   }
 
-  public async removeMemberInWorkspace(workspaceId: number, userId: number) {
-    await this.workspaceMemberModel.destroy({
-      where: {
-        workspaceId,
-        userId,
-      }
-    })
-  }
-
-  public async removeWorkspaceMemberByWorkspaceId(workspaceId: number, transaction?: Transaction) {
+  public async removeWorkspaceMembersByWorkspaceId(workspaceId: number, transaction?: Transaction): Promise<void> {
     await this.workspaceMemberModel.destroy({
       where: { workspaceId },
       transaction,
     })
   }
 
-  public async removeWorkspaceMemberByUserId(userId: number, transaction?: Transaction) {
+  public async removeWorkspaceMembersByUserId(userId: number, transaction?: Transaction): Promise<void> {
     await this.workspaceMemberModel.destroy({
       where: { userId },
       transaction,

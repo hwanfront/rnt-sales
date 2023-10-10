@@ -1,9 +1,9 @@
 import express from 'express';
 import Container from 'typedi';
+
 import { checkAuthenticated } from '../middleware';
-import { Logger } from 'winston';
 import CustomError from '../../utils/CustomError';
-import WorkspaceMemberService from '../../services/WorkspaceMember';
+import WorkspaceMemberService from '../../services/workspaceMember';
 import WorkspaceService from '../../services/workspace';
 import UsersService from '../../services/user';
 
@@ -12,89 +12,85 @@ const router = express.Router();
 export default (app: express.Router) => {
   app.use('/workspace', router);
 
-  router.get('/:workspace/member', checkAuthenticated, async (req, res, next) => {
-    const logger = Container.get<Logger>('logger');
+  router.get('/:url/member', checkAuthenticated, async (req, res, next) => {
     try {
       const workspaceServiceInst = Container.get(WorkspaceService);
-      const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.workspace);
+      const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.url);
       const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
-      await workspaceMemberServiceInst.checkMemberAuthInWorkspace(workspace.id, req.user!.id);
-      const members = await workspaceMemberServiceInst.getMembersByWorkspaceId(workspace.id);
+      const isMember = workspaceMemberServiceInst.getUserInWorkspaceMember(workspace.id, req.user!.id);
+      if(!isMember) {
+        throw new CustomError(401, "Workspace에 회원이 존재하지 않습니다.");
+      }
+      const members = await workspaceMemberServiceInst.getWrokspaceMembersByWorkspaceId(workspace.id);
       res.status(200).json(members);
     } catch (error) {
-      if(error instanceof CustomError) {
-        return res.status(error.statusCode).send(error.message);
-      }
-      logger.error(error);
       return next(error);
     }
   })
 
-  router.post('/:workspace/member', checkAuthenticated, async (req, res, next) => {
-    const logger = Container.get<Logger>('logger');
+  router.post('/:url/member', checkAuthenticated, async (req, res, next) => {
     try {
       const workspaceServiceInst = Container.get(WorkspaceService);
-      const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.workspace);
-      await workspaceServiceInst.checkHasUserAuth(req.user!.id, workspace.ownerId);
-      const userServiceInst = Container.get(UsersService);
-      const userId = await userServiceInst.getUserIdByEmail(req.body.email);
+      const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.url);
+      if(req.user!.id !== workspace.ownerId) {
+        throw new CustomError(401, "Workspace에 대한 권한이 없습니다!");
+      }
       const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
-      await workspaceMemberServiceInst.checkMemberInWorkspace(workspace.id, userId);
+      const userServiceInst = Container.get(UsersService);
+      const user = await userServiceInst.getUserByEmail(req.body.email);
+      const isMember = await workspaceMemberServiceInst.getUserInWorkspaceMember(workspace.id, user.id);
+      if(isMember) {
+        throw new CustomError(401, "이미 Workspace에 회원이 존재합니다.");
+      }
       await workspaceMemberServiceInst.createWorkspaceMember({
         workspaceId: workspace.id,
-        userId,
+        userId: user.id,
         editPermission: false,
       })
       res.status(201).send("Workspace Member 추가 성공");
     } catch (error) {
-      if(error instanceof CustomError) {
-        return res.status(error.statusCode).send(error.message);
-      }
-      logger.error(error);
       return next(error);
     }
   })
 
-  router.delete('/:workspace/member/:id', checkAuthenticated, async (req, res, next) => {
-    const logger = Container.get<Logger>('logger');
+  router.delete('/:url/member/:id', checkAuthenticated, async (req, res, next) => {
     try {
       const workspaceServiceInst = Container.get(WorkspaceService);
-      const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.workspace);
-      await workspaceServiceInst.checkHasUserAuth(req.user!.id, workspace.ownerId);
-      const userServiceInst = Container.get(UsersService);
-      const user = await userServiceInst.getUserById(req.params.id);
+      const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.url);
+      if(req.user!.id !== workspace.ownerId) {
+        throw new CustomError(401, "Workspace에 대한 권한이 없습니다!");
+      }
       const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
-      await workspaceMemberServiceInst.checkNoMemberInWorkspace(workspace.id, user.id);
-      await workspaceMemberServiceInst.removeMemberInWorkspace(workspace.id, user.id);
+      const isMember = await workspaceMemberServiceInst.getUserInWorkspaceMember(workspace.id, req.user!.id);
+      if(!isMember) {
+        throw new CustomError(401, "Workspace에 회원이 존재하지 않습니다.");
+      }
+      await workspaceMemberServiceInst.removeMemberInWorkspace(workspace.id, parseInt(req.params.id, 10));
       res.status(200).send("Workspace Member 삭제 성공");
     } catch (error) {
-      if(error instanceof CustomError) {
-        return res.status(error.statusCode).send(error.message);
-      }
-      logger.error(error);
       return next(error);
     }
   })
 
-  router.post('/:workspace/member/:id', checkAuthenticated, async (req, res, next) => {
-    const logger = Container.get<Logger>('logger');
+  router.post('/:url/member/:id', checkAuthenticated, async (req, res, next) => {
     try {
       const workspaceServiceInst = Container.get(WorkspaceService);
-      const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.workspace);
-      await workspaceServiceInst.checkHasUserAuth(req.user!.id, workspace.ownerId);
+      const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.url);
+      if(req.user!.id !== workspace.ownerId) {
+        throw new CustomError(401, "Workspace에 대한 권한이 없습니다!");
+      }
       const userServiceInst = Container.get(UsersService);
       const user = await userServiceInst.getUserById(req.params.id);
       const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
-      await workspaceMemberServiceInst.checkNoMemberInWorkspace(workspace.id, user.id);
+      const isMember = workspaceMemberServiceInst.getUserInWorkspaceMember(workspace.id, req.user!.id);
+      if(!isMember) {
+        throw new CustomError(401, "Workspace에 회원이 존재하지 않습니다.");
+      }
       await workspaceMemberServiceInst.updateMemberEditPermission({
         editPermission: req.body.editPermission
       }, workspace.id, user.id);
       res.status(201).send("Workspace Member 수정권한 변경 완료");
     } catch (error) {
-      if(error instanceof CustomError) {
-        return res.status(error.statusCode).send(error.message);
-      }
-      logger.error(error);
       return next(error);
     }
 

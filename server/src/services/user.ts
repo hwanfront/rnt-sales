@@ -1,60 +1,63 @@
 import { Service, Inject } from 'typedi';
+import { Transaction } from 'sequelize';
 
 import CustomError from '../utils/CustomError';
 
-import type { CreateUserDTO, IUser, UpdateUserDTO } from '../interfaces/IUser';
-import type { Logger } from 'winston';
-import { Transaction } from 'sequelize';
+import User from '../models/user';
+import type { UpdateUserDTO } from '../interfaces/IUser';
 
 @Service()
-class UsersService {
+class UserService {
   constructor(
     @Inject('userModel') private userModel: Models.User,
-    @Inject('logger') private logger: Logger,
   ){}
 
-  public async getUserIdByEmail(email: string) {
+  public async getUserByEmail(email: string): Promise<User> {
     const user = await this.userModel.findOne({
       where: { email },
-      attributes: ["id"],
-    })
-    if(!user) {
-      const error = new CustomError(404, "존재하지 않는 이메일입니다.");
-      this.logger.error(error.message);
-      throw error;
-    }
-    return user.id;
-  }
-
-  public async getUserById(id: string | number, attributes?: Array<keyof Partial<IUser>>) {
-    const user = await this.userModel.findOne({
-      where: { id },
-      attributes,
+      attributes: ["id", "nickname", "email"],
     });
+
     if(!user) {
-      const error = new CustomError(404, "존재하지 않는 사용자입니다.");
-      this.logger.error(error.message);
-      throw error;
+      throw new CustomError(404, "존재하지 않는 사용자입니다.");
     }
+    
     return user;
   }
 
-  public async createUser(user: CreateUserDTO) {
-    await this.userModel.create(user);
+  public async getUserById(id?: string | number): Promise<User> {
+    const user = await this.userModel.findOne({
+      where: { id: typeof id === "string" ? parseInt(id, 10) : id },
+      attributes: ["id", "nickname", "email", "password"],
+    });
+
+    if(!user) {
+      throw new CustomError(404, "존재하지 않는 사용자입니다.");
+    }
+    
+    return user;
   }
 
-  public async updateUser(id: number, user: UpdateUserDTO) {
-    await this.userModel.update(user, {
+  public async updateUser(id: number, user: UpdateUserDTO): Promise<void> {
+    const updated = await this.userModel.update(user, {
       where: { id }
     })
+
+    if(!updated) {
+      throw new CustomError(400, "회원정보 수정 실패!")
+    }
   }
 
-  public async removeUser(id: number, transaction?: Transaction) {
-    await this.userModel.destroy({
+  public async removeUser(id: number, transaction?: Transaction): Promise<void> {
+    const removed = await this.userModel.destroy({
       where: { id },
       transaction,
     })
+
+    if(!removed) {
+      throw new CustomError(400, "회원 삭제 실패!")
+    }
   }
 }
 
-export default UsersService;
+export default UserService;

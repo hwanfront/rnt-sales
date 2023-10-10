@@ -2,7 +2,7 @@ import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, 
 import { sequelize } from './sequelize';
 import type { SequelizeDB } from ".";
 import Container from 'typedi';
-import WorkspaceMemberService from '../services/WorkspaceMember';
+import WorkspaceMemberService from '../services/workspaceMember';
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>;
@@ -52,9 +52,9 @@ User.beforeBulkDestroy((options) => {
   options.individualHooks = true;
 })
 
-User.addHook('afterDestroy', async (instance: User, options) => {
+User.addHook('afterDestroy', async (user: User, options) => {
   const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
-  await workspaceMemberServiceInst.removeWorkspaceMemberByUserId(instance.id, options.transaction!);
+  await workspaceMemberServiceInst.removeWorkspaceMembersByUserId(user.id, options.transaction!);
 })
 
 export const associate = (db: SequelizeDB) => {
