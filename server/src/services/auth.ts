@@ -32,7 +32,6 @@ class AuthService {
   public localLogin = (req: Request, res: Response, next: NextFunction): void => {
     this.passport.authenticate('local',(error: Error, user: Express.User, info: { message: string }) => {
       if(error) {
-        this.logger.error(error);
         return next(error);
       }
 
@@ -42,7 +41,6 @@ class AuthService {
 
       return req.login(user, async (loginErr) => {
         if(loginErr) {
-          this.logger.error(loginErr);
           return next(loginErr);
         }
         const { id, nickname, email } = await this.userService.getUserById(user.id);
@@ -62,7 +60,6 @@ class AuthService {
   }
 
   public async comparePassword(data: string | Buffer, encrypted: string): Promise<void> {
-    this.logger.info('%s / %s', data, encrypted);
     const result = await bcrypt.compare(data, encrypted);
 
     if(!result) {

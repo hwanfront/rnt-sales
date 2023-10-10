@@ -19,8 +19,6 @@
     "helmet": "^7.0.0",
     "hpp": "^0.2.3",
     "method-override": "^3.0.0",
-    "moment": "^2.29.4",
-    "moment-timezone": "^0.5.43",
     "morgan": "^1.10.0",
     "mysql2": "^3.6.0",
     "passport": "^0.6.0",

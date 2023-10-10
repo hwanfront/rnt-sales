@@ -1,5 +1,3 @@
-import moment from 'moment';
-
 import sequelizeSyncLoader from './sequelize';
 import expressLoader from './express';
 import passportLoader, { passportConfig } from './passport';
@@ -10,7 +8,6 @@ import routerLoader from './router';
 import type { Application } from 'express';
 
 export default async ({ expressApp }: { expressApp: Application }) => {
-  moment.tz.setDefault('Asia/Seoul');
 
   loggerLoader({ app: expressApp });
   logger.info('Logger loaded');
