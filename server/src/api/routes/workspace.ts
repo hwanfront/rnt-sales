@@ -1,5 +1,6 @@
 import express from 'express';
 import Container from 'typedi';
+import asyncHandler from 'express-async-handler';
 
 import { checkAuthenticated, checkUserInWorkspace, checkWorkspaceOwner } from '../middleware';
 import { sequelize } from '../../models';
@@ -13,25 +14,17 @@ const router = express.Router();
 export default (app: express.Router) => {
   app.use('/workspace', router);
 
-  router.get('/', checkAuthenticated, async (req, res, next) => {
-    try {
-      const workspaceServiceInst = Container.get(WorkspaceService);
-      const userWithWorkspaces = await workspaceServiceInst.getWorkspacesByUserId(req.user!.id);
-      res.status(200).json(userWithWorkspaces);
-    } catch (error) {
-      return next(error);
-    }
-  })
+  router.get('/', checkAuthenticated, asyncHandler(async (req, res, next) => {
+    const workspaceServiceInst = Container.get(WorkspaceService);
+    const userWithWorkspaces = await workspaceServiceInst.getWorkspacesByUserId(req.user!.id);
+    res.status(200).json(userWithWorkspaces);
+  }))
   
-  router.get('/:url', checkAuthenticated, checkUserInWorkspace, async (req, res, next) => {
-    try {
-      const workspaceServiceInst = Container.get(WorkspaceService);
-      const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.url);
-      res.status(200).json(workspace);
-    } catch (error) {
-      return next(error);
-    }
-  })
+  router.get('/:url', checkAuthenticated, checkUserInWorkspace, asyncHandler(async (req, res, next) => {
+    const workspaceServiceInst = Container.get(WorkspaceService);
+    const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.url);
+    res.status(200).json(workspace);
+  }))
   
   router.post('/', checkAuthenticated, async (req, res, next) => {
     const transaction = await sequelize.transaction();
@@ -57,27 +50,23 @@ export default (app: express.Router) => {
     }
   })
   
-  router.patch('/:url', checkAuthenticated, checkWorkspaceOwner, async (req, res, next) => {
-    try {
-      let workspace: UpdateWorkspaceDTO = {
-        name: req.body.name,
-        url: req.body.url,
-      };
-      const workspaceServiceInst = Container.get(WorkspaceService);
-      if(req.body.url && req.params.url !== req.body.url) {
-        await workspaceServiceInst.checkDuplicatedUrl(req.body.url);
-      }
-      if(req.body.newOwnerEmail) {
-        const userServiceInst = Container.get(UsersService);
-        const newOwner = await userServiceInst.getUserByEmail(req.body.newOwnerEmail);
-        workspace.ownerId = newOwner.id;
-      }
-      await workspaceServiceInst.updateWorkspace(req.params.url, workspace)
-      res.status(201).send("Workspace 수정 성공");
-    } catch (error) {
-      return next(error);
+  router.patch('/:url', checkAuthenticated, checkWorkspaceOwner, asyncHandler(async (req, res, next) => {
+    let workspace: UpdateWorkspaceDTO = {
+      name: req.body.name,
+      url: req.body.url,
+    };
+    const workspaceServiceInst = Container.get(WorkspaceService);
+    if(req.body.url && req.params.url !== req.body.url) {
+      await workspaceServiceInst.checkDuplicatedUrl(req.body.url);
     }
-  })
+    if(req.body.newOwnerEmail) {
+      const userServiceInst = Container.get(UsersService);
+      const newOwner = await userServiceInst.getUserByEmail(req.body.newOwnerEmail);
+      workspace.ownerId = newOwner.id;
+    }
+    await workspaceServiceInst.updateWorkspace(req.params.url, workspace)
+    res.status(201).send("Workspace 수정 성공");
+  }))
   
   router.delete('/:url', checkAuthenticated, checkWorkspaceOwner, async (req, res, next) => {
     const transaction = await sequelize.transaction();
