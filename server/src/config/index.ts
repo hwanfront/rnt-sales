@@ -66,6 +66,9 @@ export default {
     }
   },
   api: {
-    prefix: '/api'
+    prefix: '/api',
   },
+  bcrypt: {
+    saltRounds: 12, 
+  }
 }

@@ -1,45 +1,103 @@
 import { Service, Inject } from 'typedi';
-
-import type{ Logger } from 'winston';
-import CustomError from '../utils/CustomError';
-import { CreateWorkspaceMemberDTO } from '../interfaces/IWorkspaceMember';
 import { Transaction } from 'sequelize';
+
+import User from '../models/user';
+import CustomError from '../utils/CustomError';
+
+import type { CreateWorkspaceMemberDTO, UpdateWorkspaceMemberDTO } from '../interfaces/IWorkspaceMember';
 
 @Service()
 class WorkspaceMemberService {
   constructor(
+    @Inject('userModel') private userModel: Models.User,
+    @Inject('workspaceModel') private workspaceModel: Models.Workspace,
     @Inject('workspaceMemberModel') private workspaceMemberModel: Models.WorkspaceMember,
-    @Inject('logger') private logger: Logger,
   ){}
 
-  public async checkMemberAuthInWorkspace(WorkspaceId: number, UserId: number) {
-    const isMember = await this.workspaceMemberModel.findOne({
+  public async checkWorkspaceMember(url: string, userId: number): Promise<boolean> {
+    const workspace = await this.workspaceModel.findOne({
+      where: { url },
+      attributes: ["id"],
+    })
+
+    if(!workspace) {
+      throw new CustomError(404, "Workspace가 존재하지 않습니다.");
+    }
+
+    const workspaceMember = await this.workspaceMemberModel.findOne({
       where: {
-        WorkspaceId,
-        UserId
+        workspaceId: workspace.id,
+        userId
       }
     })
-    if(!isMember) {
-      const error = new CustomError(401, "Workspace에 대한 권한이 없습니다!");
-      this.logger.error(error.message);
-      throw error;
+
+    return !!workspaceMember;
+  }
+
+  public async getWorkspaceMembersByUrl(url: string): Promise<User[]> {
+    const workspaceMembers = await this.workspaceModel.findOne({
+      where: { url },
+      attributes: ["id", "name", "url", "ownerId"],
+      include: [{
+        model: this.userModel,
+        as: "members",
+        attributes: ["id", "nickname", "email"],
+        through: { as: "status" , attributes: ["editPermission"] },
+        order: [["nickname", "DESC"]],
+      }],
+    });
+
+    if(!workspaceMembers) {
+      throw new CustomError(401, "Workspace가 존재하지 않습니다.");
+    }
+
+    return workspaceMembers.members || [];
+  }
+
+  public async createWorkspaceMember(workspaceMember: CreateWorkspaceMemberDTO, transaction?: Transaction): Promise<void> {
+    const createdMember = await this.workspaceMemberModel.create(workspaceMember, { transaction });
+
+    if(!createdMember) {
+      throw new CustomError(401, "Workspace에 추가 실패!");
     }
   }
 
-  public async createWorkspaceMember(workspaceMember: CreateWorkspaceMemberDTO, transaction?: Transaction) {
-    await this.workspaceMemberModel.create(workspaceMember, { transaction });
+  public async removeMemberInWorkspace(workspaceId: number, userId: number): Promise<void> {
+    const removed = await this.workspaceMemberModel.destroy({
+      where: {
+        workspaceId,
+        userId,
+      }
+    })
+
+    if(!removed) {
+      throw new CustomError(400, "Workspace 멤버 삭제 실패!")
+    }
   }
 
-  public async removeWorkspaceMemberByWorkspaceId(WorkspaceId: number, transaction?: Transaction) {
+  public async updateMemberEditPermission(workspaceMember: UpdateWorkspaceMemberDTO , workspaceId: number, userId: number): Promise<void> {
+    const updated = await this.workspaceMemberModel.update(workspaceMember, {
+      where: {
+        workspaceId,
+        userId,
+      }
+    })
+
+    if(!updated) {
+      throw new CustomError(400, "Workspace 멤버 수정 실패!")
+    }
+  }
+
+  public async removeWorkspaceMembersByWorkspaceId(workspaceId: number, transaction?: Transaction): Promise<void> {
     await this.workspaceMemberModel.destroy({
-      where: { WorkspaceId },
+      where: { workspaceId },
       transaction,
     })
   }
 
-  public async removeWorkspaceMemberByUserId(UserId: number, transaction?: Transaction) {
+  public async removeWorkspaceMembersByUserId(userId: number, transaction?: Transaction): Promise<void> {
     await this.workspaceMemberModel.destroy({
-      where: { UserId },
+      where: { userId },
       transaction,
     })
   }

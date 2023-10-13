@@ -9,8 +9,8 @@ class Revenue extends Model<InferAttributes<Revenue>, InferCreationAttributes<Re
   declare month: number;
   declare company: string;
   declare amount: string;
-  declare WorkspaceId: ForeignKey<Workspace['id']>;
-  declare ItemId: ForeignKey<Item['id']>;
+  declare workspaceId: ForeignKey<Workspace['id']>;
+  declare itemId: ForeignKey<Item['id']>;
 }
 
 Revenue.init({
@@ -44,6 +44,20 @@ Revenue.init({
       }
     }
   },
+  workspaceId: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    references: {
+      model: Workspace,
+      key: 'id',
+    }
+  },
+  itemId: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    references: {
+      model: Item,
+      key: 'id',
+    }
+  }
 }, {
   sequelize,
   timestamps: false,
@@ -55,9 +69,9 @@ Revenue.init({
 });
 
 export const associate = (db: SequelizeDB) =>  {
-  db.Revenue.belongsTo(db.Workspace);
-  db.Revenue.hasOne(db.RevenueDetail, { onDelete: 'CASCADE' });
-  db.Revenue.belongsTo(db.Item);
+  db.Revenue.belongsTo(db.Workspace, { foreignKey: "workspaceId" });
+  db.Revenue.hasOne(db.RevenueDetail, { foreignKey: "revenueId", onDelete: 'CASCADE' });
+  db.Revenue.belongsTo(db.Item, { foreignKey: "itemId" });
 }
 
 export default Revenue;

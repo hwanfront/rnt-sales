@@ -1,18 +1,20 @@
-import { BelongsToManyRemoveAssociationsMixin, CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model } from "sequelize";
-import { sequelize } from './sequelize';
-import User from "./user";
-import type { SequelizeDB } from ".";
-import WorkspaceMember from "./workspaceMember";
 import Container from "typedi";
-import WorkspaceMemberService from "../services/WorkspaceMember";
+import { CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model } from "sequelize";
+
+import User from "./user";
+import { sequelize } from './sequelize';
+import WorkspaceMemberService from "../services/workspaceMember";
+
+import type { SequelizeDB } from ".";
 
 class Workspace extends Model<InferAttributes<Workspace>, InferCreationAttributes<Workspace>> {
   declare id: CreationOptional<number>;
   declare name: string;
   declare url: string;
-  declare OwnerId: ForeignKey<User['id']>;
+  declare ownerId: ForeignKey<User['id']>;
   declare readonly createdAt: CreationOptional<Date>;
   declare deletedAt: CreationOptional<Date>;
+  declare members?: User[];
 }
 
 Workspace.init({
@@ -30,6 +32,13 @@ Workspace.init({
     allowNull: false, 
     unique: true, 
   },
+  ownerId: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    references: {
+      model: User,
+      key: 'id',
+    }
+  },
   createdAt: DataTypes.DATE,
   deletedAt: DataTypes.DATE,
 }, {
@@ -45,16 +54,16 @@ Workspace.beforeBulkDestroy((options) => {
   options.individualHooks = true;
 })
 
-Workspace.addHook('afterDestroy', async (instance: Workspace, options) => {
+Workspace.addHook('afterDestroy', async (workspace: Workspace, options) => {
   const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
-  await workspaceMemberServiceInst.removeWorkspaceMemberByWorkspaceId(instance.id, options.transaction!);
+  await workspaceMemberServiceInst.removeWorkspaceMembersByWorkspaceId(workspace.id, options.transaction!);
 })
 
 export const associate = (db: SequelizeDB) => {
-  db.Workspace.belongsTo(db.User, { as: "Owners", foreignKey: "OwnerId" });
-  db.Workspace.belongsToMany(db.User, { through: db.WorkspaceMember, as: "Members", onDelete: 'CASCADE', hooks: true });
-  db.Workspace.hasMany(db.Revenue, { onDelete: "CASCADE" });
-  db.Workspace.hasMany(db.Item, { onDelete: "CASCADE" });
+  db.Workspace.belongsTo(db.User, { as: "owners", foreignKey: "ownerId" });
+  db.Workspace.belongsToMany(db.User, { through: db.WorkspaceMember, as: "members", onDelete: 'CASCADE', hooks: true, foreignKey: "workspaceId" });
+  db.Workspace.hasMany(db.Revenue, { onDelete: "CASCADE", foreignKey: "workspaceId" });
+  db.Workspace.hasMany(db.Item, { onDelete: "CASCADE", foreignKey: "workspaceId" });
 }
 
 export default Workspace;

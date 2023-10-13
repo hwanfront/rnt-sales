@@ -2,7 +2,7 @@ export interface IWorkspace {
   id: number;
   name: string;
   url: string;
-  OwnerId: number;
+  ownerId: number;
 }
 
 export interface CreateWorkspaceDTO extends Omit<IWorkspace, 'id'> {}

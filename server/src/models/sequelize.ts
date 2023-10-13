@@ -8,12 +8,10 @@ const sequelize = new Sequelize(
   {
     ...config.sequelize,
     dialectOptions: {
-      timezone: 'Etc/GMT+9',
+      timezone: '+09:00',
       connectTimeout: 1000,
       charset: 'utf8mb4',
-      collate: 'utf8mb4_general_ci',
     },
-    timezone: '+09:00',
   }
 );
 
