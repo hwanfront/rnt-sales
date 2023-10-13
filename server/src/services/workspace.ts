@@ -1,23 +1,19 @@
 import { Service, Inject } from 'typedi';
 import { Transaction } from 'sequelize';
 
+import Workspace from '../models/workspace';
 import CustomError from '../utils/CustomError';
 
-import type { Logger } from 'winston';
-import type { CreateWorkspaceDTO, IWorkspace, UpdateWorkspaceDTO } from '../interfaces/IWorkspace';
-import Workspace from '../models/workspace';
-import User from '../models/user';
+import type { CreateWorkspaceDTO, UpdateWorkspaceDTO } from '../interfaces/IWorkspace';
 
 @Service()
 class WorkspaceService {
   constructor(
     @Inject('userModel') private userModel: Models.User,
     @Inject('workspaceModel') private workspaceModel: Models.Workspace,
-    @Inject('workspaceMemberModel') private workspaceMemberModel: Models.WorkspaceMember,
-    @Inject('logger') private logger: Logger,
   ){}
 
-  public async getUserWorkspacesByUserId(userId: number): Promise<User> {
+  public async getWorkspacesByUserId(userId: number): Promise<Workspace[]> {
     const userWithWorkspaces = await this.userModel.findByPk(userId, {
       attributes: ["nickname", "email"],
       include: [{
@@ -32,7 +28,7 @@ class WorkspaceService {
       throw new CustomError(404, "존재하지 않는 사용자입니다.");
     }
 
-    return userWithWorkspaces;
+    return userWithWorkspaces.workspaces || [];
   }
 
   public async getWorkspaceByUrl(url: string): Promise<Workspace> {
@@ -45,19 +41,6 @@ class WorkspaceService {
       throw new CustomError(404, "존재하지 않는 URL입니다.");
     }
     
-    return workspace;
-  }
-
-  public async getWorkspaceById(id: string): Promise<Workspace> {
-    const workspace = await this.workspaceModel.findOne({
-      where: { id },
-      attributes: ["id", "name", "url", "updatedAt", "ownerId"],
-    })
-
-    if(!workspace) {
-      throw new CustomError(404, "존재하지 않는 Workspace입니다.");
-    }
-
     return workspace;
   }
 
@@ -82,9 +65,9 @@ class WorkspaceService {
     return newWorkspace;
   }
 
-  public async updateWorkspace(id: number, updateWorkspaceDTO: UpdateWorkspaceDTO): Promise<void> {
+  public async updateWorkspace(url: string, updateWorkspaceDTO: UpdateWorkspaceDTO): Promise<void> {
     const updated = await this.workspaceModel.update(updateWorkspaceDTO, { 
-      where: { id } 
+      where: { url } 
     });
 
     if(!updated) {
@@ -92,9 +75,9 @@ class WorkspaceService {
     }
   }
 
-  public async removeWorkspace(id: number, transaction?: Transaction): Promise<void> {
+  public async removeWorkspace(url: string, transaction?: Transaction): Promise<void> {
     const removed = await this.workspaceModel.destroy({
-      where: { id },
+      where: { url },
       transaction
     })
 

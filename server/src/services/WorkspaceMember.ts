@@ -1,12 +1,10 @@
 import { Service, Inject } from 'typedi';
 import { Transaction } from 'sequelize';
 
+import User from '../models/user';
 import CustomError from '../utils/CustomError';
 
-import type { Logger } from 'winston';
 import type { CreateWorkspaceMemberDTO, UpdateWorkspaceMemberDTO } from '../interfaces/IWorkspaceMember';
-import WorkspaceMember from '../models/workspaceMember';
-import Workspace from '../models/workspace';
 
 @Service()
 class WorkspaceMemberService {
@@ -14,31 +12,31 @@ class WorkspaceMemberService {
     @Inject('userModel') private userModel: Models.User,
     @Inject('workspaceModel') private workspaceModel: Models.Workspace,
     @Inject('workspaceMemberModel') private workspaceMemberModel: Models.WorkspaceMember,
-    @Inject('logger') private logger: Logger,
   ){}
 
-  public async getUserInWorkspaceMember(workspaceId: number, userId: number): Promise<WorkspaceMember | null> {
-    const member = await this.workspaceMemberModel.findOne({
+  public async checkWorkspaceMember(url: string, userId: number): Promise<boolean> {
+    const workspace = await this.workspaceModel.findOne({
+      where: { url },
+      attributes: ["id"],
+    })
+
+    if(!workspace) {
+      throw new CustomError(404, "Workspace가 존재하지 않습니다.");
+    }
+
+    const workspaceMember = await this.workspaceMemberModel.findOne({
       where: {
-        workspaceId,
+        workspaceId: workspace.id,
         userId
       }
     })
 
-    return member || null;
+    return !!workspaceMember;
   }
 
-  public async createWorkspaceMember(workspaceMember: CreateWorkspaceMemberDTO, transaction?: Transaction): Promise<void> {
-    const createdMember = await this.workspaceMemberModel.create(workspaceMember, { transaction });
-
-    if(!createdMember) {
-      throw new CustomError(401, "Workspace에 추가 실패!");
-    }
-  }
-
-  public async getWrokspaceMembersByWorkspaceId(WorkspaceId: number): Promise<Workspace> {
+  public async getWorkspaceMembersByUrl(url: string): Promise<User[]> {
     const workspaceMembers = await this.workspaceModel.findOne({
-      where: { id: WorkspaceId },
+      where: { url },
       attributes: ["id", "name", "url", "ownerId"],
       include: [{
         model: this.userModel,
@@ -53,7 +51,15 @@ class WorkspaceMemberService {
       throw new CustomError(401, "Workspace가 존재하지 않습니다.");
     }
 
-    return workspaceMembers;
+    return workspaceMembers.members || [];
+  }
+
+  public async createWorkspaceMember(workspaceMember: CreateWorkspaceMemberDTO, transaction?: Transaction): Promise<void> {
+    const createdMember = await this.workspaceMemberModel.create(workspaceMember, { transaction });
+
+    if(!createdMember) {
+      throw new CustomError(401, "Workspace에 추가 실패!");
+    }
   }
 
   public async removeMemberInWorkspace(workspaceId: number, userId: number): Promise<void> {

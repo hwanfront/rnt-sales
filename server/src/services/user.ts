@@ -1,9 +1,9 @@
 import { Service, Inject } from 'typedi';
 import { Transaction } from 'sequelize';
 
+import User from '../models/user';
 import CustomError from '../utils/CustomError';
 
-import User from '../models/user';
 import type { UpdateUserDTO } from '../interfaces/IUser';
 
 @Service()
@@ -25,9 +25,9 @@ class UserService {
     return user;
   }
 
-  public async getUserById(id?: string | number): Promise<User> {
+  public async getUserById(id: number): Promise<User> {
     const user = await this.userModel.findOne({
-      where: { id: typeof id === "string" ? parseInt(id, 10) : id },
+      where: { id },
       attributes: ["id", "nickname", "email", "password"],
     });
 

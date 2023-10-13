@@ -2,11 +2,10 @@ import { Service, Inject } from 'typedi';
 import bcrypt, { genSalt } from 'bcrypt';
 
 import config from '../config';
+import UsersService from './user';
 import CustomError from '../utils/CustomError';
 
-import UsersService from './user';
 import type { NextFunction, Request, Response } from 'express';
-import type { Logger } from 'winston';
 import type { PassportStatic } from 'passport';
 import type { CreateUserDTO } from '../interfaces/IUser';
 
@@ -14,9 +13,8 @@ import type { CreateUserDTO } from '../interfaces/IUser';
 @Service()
 class AuthService {
   constructor(
-    @Inject('userModel') private userModel: Models.User,
     @Inject() private userService: UsersService,
-    @Inject('logger') private logger: Logger,
+    @Inject('userModel') private userModel: Models.User,
     @Inject('passport') private passport: PassportStatic,
   ){}
 
@@ -43,12 +41,8 @@ class AuthService {
         if(loginErr) {
           return next(loginErr);
         }
-        const { id, nickname, email } = await this.userService.getUserById(user.id);
-        return res.status(200).json({
-          id,
-          nickname,
-          email,
-        });
+        const existUser = await this.userService.getUserById(user.id);
+        return res.status(200).json(existUser);
       })
     })(req, res, next);
   }

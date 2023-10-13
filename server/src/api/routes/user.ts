@@ -28,7 +28,7 @@ export default (app: express.Router) => {
   router.get('/info/:id', checkAuthenticated, async (req, res, next) => {
     try {
       const userServiceInst = Container.get(UserService);
-      const user = await userServiceInst.getUserById(req.params.id);
+      const user = await userServiceInst.getUserById(parseInt(req.params.id, 10));
       return res.status(200).json({ 
         id: user.id, 
         nickname: user.nickname, 

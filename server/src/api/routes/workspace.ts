@@ -1,12 +1,12 @@
 import express from 'express';
 import Container from 'typedi';
 
-import { checkAuthenticated } from '../middleware';
+import { checkAuthenticated, checkUserInWorkspace, checkWorkspaceOwner } from '../middleware';
 import { sequelize } from '../../models';
 import UsersService from '../../services/user';
-import CustomError from '../../utils/CustomError';
 import WorkspaceService from '../../services/workspace';
 import WorkspaceMemberService from '../../services/workspaceMember';
+import { UpdateWorkspaceDTO } from '../../interfaces/IWorkspace';
 
 const router = express.Router();
 
@@ -16,22 +16,17 @@ export default (app: express.Router) => {
   router.get('/', checkAuthenticated, async (req, res, next) => {
     try {
       const workspaceServiceInst = Container.get(WorkspaceService);
-      const userWithWorkspaces = await workspaceServiceInst.getUserWorkspacesByUserId(req.user!.id);
+      const userWithWorkspaces = await workspaceServiceInst.getWorkspacesByUserId(req.user!.id);
       res.status(200).json(userWithWorkspaces);
     } catch (error) {
       return next(error);
     }
   })
   
-  router.get('/:url', checkAuthenticated, async (req, res, next) => {
+  router.get('/:url', checkAuthenticated, checkUserInWorkspace, async (req, res, next) => {
     try {
       const workspaceServiceInst = Container.get(WorkspaceService);
       const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.url);
-      const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
-      const isMember = await workspaceMemberServiceInst.getUserInWorkspaceMember(workspace.id, req.user!.id);
-      if(!isMember) {
-        throw new CustomError(401, "Workspace에 회원이 존재하지 않습니다.");
-      }
       res.status(200).json(workspace);
     } catch (error) {
       return next(error);
@@ -62,38 +57,33 @@ export default (app: express.Router) => {
     }
   })
   
-  router.patch('/:id', checkAuthenticated, async (req, res, next) => {
+  router.patch('/:url', checkAuthenticated, checkWorkspaceOwner, async (req, res, next) => {
     try {
-      const workspaceServiceInst = Container.get(WorkspaceService);
-      const workspace = await workspaceServiceInst.getWorkspaceById(req.params.id);
-      if(req.user!.id !== workspace.ownerId) {
-        throw new CustomError(401, "Workspace에 대한 권한이 없습니다!");
-      }
-      const userServiceInst = Container.get(UsersService);
-      const newOwner = await userServiceInst.getUserByEmail(req.body.newOwnerEmail);
-      if(req.body.url && workspace.url !== req.body.url) {
-        await workspaceServiceInst.checkDuplicatedUrl(req.body.url);
-      }
-      await workspaceServiceInst.updateWorkspace(workspace.id, {
+      let workspace: UpdateWorkspaceDTO = {
         name: req.body.name,
         url: req.body.url,
-        ownerId: newOwner.id
-      })
+      };
+      const workspaceServiceInst = Container.get(WorkspaceService);
+      if(req.body.url && req.params.url !== req.body.url) {
+        await workspaceServiceInst.checkDuplicatedUrl(req.body.url);
+      }
+      if(req.body.newOwnerEmail) {
+        const userServiceInst = Container.get(UsersService);
+        const newOwner = await userServiceInst.getUserByEmail(req.body.newOwnerEmail);
+        workspace.ownerId = newOwner.id;
+      }
+      await workspaceServiceInst.updateWorkspace(req.params.url, workspace)
       res.status(201).send("Workspace 수정 성공");
     } catch (error) {
       return next(error);
     }
   })
   
-  router.delete('/:id', checkAuthenticated, async (req, res, next) => {
+  router.delete('/:url', checkAuthenticated, checkWorkspaceOwner, async (req, res, next) => {
     const transaction = await sequelize.transaction();
     try {
       const workspaceServiceInst = Container.get(WorkspaceService);
-      const workspace = await workspaceServiceInst.getWorkspaceById(req.params.id);
-      if(req.user!.id !== workspace.ownerId) {
-        throw new CustomError(401, "Workspace에 대한 권한이 없습니다!");;
-      }
-      await workspaceServiceInst.removeWorkspace(workspace.id, transaction);
+      await workspaceServiceInst.removeWorkspace(req.params.url, transaction);
       transaction.commit();
       res.status(200).send("Workspace 삭제 성공");
     } catch (error) {

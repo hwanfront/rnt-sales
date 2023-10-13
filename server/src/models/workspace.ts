@@ -1,9 +1,11 @@
-import { CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model } from "sequelize";
-import { sequelize } from './sequelize';
-import User from "./user";
-import type { SequelizeDB } from ".";
 import Container from "typedi";
+import { CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model } from "sequelize";
+
+import User from "./user";
+import { sequelize } from './sequelize';
 import WorkspaceMemberService from "../services/workspaceMember";
+
+import type { SequelizeDB } from ".";
 
 class Workspace extends Model<InferAttributes<Workspace>, InferCreationAttributes<Workspace>> {
   declare id: CreationOptional<number>;
@@ -12,6 +14,7 @@ class Workspace extends Model<InferAttributes<Workspace>, InferCreationAttribute
   declare ownerId: ForeignKey<User['id']>;
   declare readonly createdAt: CreationOptional<Date>;
   declare deletedAt: CreationOptional<Date>;
+  declare members?: User[];
 }
 
 Workspace.init({

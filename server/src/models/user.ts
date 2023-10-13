@@ -1,8 +1,11 @@
-import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
-import { sequelize } from './sequelize';
-import type { SequelizeDB } from ".";
 import Container from 'typedi';
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
+
 import WorkspaceMemberService from '../services/workspaceMember';
+import { sequelize } from './sequelize';
+
+import type Workspace from './workspace';
+import type { SequelizeDB } from ".";
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>;
@@ -11,6 +14,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare password: string;
   declare readonly createdAt: CreationOptional<Date>;
   declare deletedAt: CreationOptional<Date>;
+  declare workspaces?: Workspace[];
 }
 
 User.init({
