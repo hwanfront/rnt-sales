@@ -34,6 +34,30 @@ class WorkspaceMemberService {
     return !!workspaceMember;
   }
 
+  public async checkUserHasEditPermission(url: string, userId: number): Promise<boolean> {
+    const workspace = await this.workspaceModel.findOne({
+      where: { url },
+      attributes: ["id"],
+    })
+
+    if(!workspace) {
+      throw new CustomError(404, "Workspace가 존재하지 않습니다.");
+    }
+
+    const workspaceMember = await this.workspaceMemberModel.findOne({
+      where: {
+        workspaceId: workspace.id,
+        userId
+      }
+    })
+
+    if(!workspaceMember) {
+      throw new CustomError(404, "Workspace의 멤버가 아닙니다.");
+    }
+
+    return workspaceMember.editPermission;
+  }
+
   public async getWorkspaceMembersByUrl(url: string): Promise<User[]> {
     const workspaceMembers = await this.workspaceModel.findOne({
       where: { url },

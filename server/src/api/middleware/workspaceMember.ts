@@ -32,3 +32,12 @@ export const checkUserIdNotInWorkspace = asyncHandler(async (req: Request, res: 
   }
   next();
 })
+
+export const checkUserHasEditPermission = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
+  const hasEditPermission = await workspaceMemberServiceInst.checkUserHasEditPermission(req.params.url, req.user!.id);
+  if(!hasEditPermission) {
+    throw new CustomError(401, "workspace에 대한 수정 권한이 없습니다.");
+  }
+  next();
+})
