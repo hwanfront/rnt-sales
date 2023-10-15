@@ -1,20 +1,22 @@
-import { CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model } from "sequelize";
+import { DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import { sequelize } from './sequelize';
 import type { SequelizeDB } from ".";
 import Revenue from "./revenue";
 
 class RevenueDetail extends Model<InferAttributes<RevenueDetail>, InferCreationAttributes<RevenueDetail>> {
-  declare id: CreationOptional<number>;
+  declare id: ForeignKey<Revenue['id']>;
   declare day: number;
   declare comment: string;
-  declare revenueId: ForeignKey<Revenue['id']>;
 }
 
 RevenueDetail.init({
   id: {
     type: DataTypes.INTEGER.UNSIGNED,
-    autoIncrement: true,
-    primaryKey: true
+    primaryKey: true,
+    references: {
+      model: Revenue,
+      key: 'id',
+    }
   },
   day: {
     type: DataTypes.INTEGER,
@@ -26,13 +28,6 @@ RevenueDetail.init({
   comment: {
     type: DataTypes.TEXT,
   },
-  revenueId: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    references: {
-      model: Revenue,
-      key: 'id',
-    }
-  }
 }, {
   sequelize,
   timestamps: false,
@@ -44,7 +39,7 @@ RevenueDetail.init({
 });
 
 export const associate = (db: SequelizeDB) => {
-  db.RevenueDetail.belongsTo(db.Revenue, { foreignKey: "revenueId" });
+  db.RevenueDetail.belongsTo(db.Revenue, { foreignKey: "id", targetKey: "id" });
 }
 
 export default RevenueDetail;

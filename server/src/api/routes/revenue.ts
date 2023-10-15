@@ -3,6 +3,7 @@ import Container from 'typedi';
 import asyncHandler from 'express-async-handler';
 
 import { checkAuthenticated, checkUserHasEditPermission, checkUserInWorkspace } from '../middleware';
+import RevenueService from '../../services/revenue';
 
 const router = express.Router();
 
@@ -10,11 +11,15 @@ export default (app: express.Router) => {
   app.use('/workspace', router);
 
   router.get('/:url/revenue', checkAuthenticated, checkUserInWorkspace, asyncHandler(async (req, res, next) => {
-    
+    const revenueServiceInst = Container.get(RevenueService);
+    const revenues = await revenueServiceInst.getRevenuesByUrl(req.params.url);
+    res.status(200).json(revenues);
   }))
 
   router.get('/:url/revenue/:id', checkAuthenticated, checkUserInWorkspace, asyncHandler(async (req, res, next) => {
-    
+    const revenueServiceInst = Container.get(RevenueService);
+    const revenue = await revenueServiceInst.getRevenueById(parseInt(req.params.id, 10));
+    res.status(200).json(revenue);
   }))
 
   router.post('/:url/revenue', checkAuthenticated, checkUserInWorkspace, checkUserHasEditPermission, asyncHandler(async (req, res, next) => {
