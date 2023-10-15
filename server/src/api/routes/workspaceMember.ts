@@ -2,11 +2,12 @@ import express from 'express';
 import Container from 'typedi';
 import asyncHandler from 'express-async-handler';
 
-import { checkAuthenticated, checkUserIdInWorkspace, checkUserIdNotInWorkspace, checkUserInWorkspace } from '../middleware';
+import { checkAuthenticated, checkUserIdInWorkspace, checkUserInWorkspace } from '../middleware';
 import WorkspaceMemberService from '../../services/workspaceMember';
 import { checkWorkspaceOwner } from '../middleware/workspace';
 import WorkspaceService from '../../services/workspace';
 import UserService from '../../services/user';
+import CustomError from '../../utils/CustomError';
 
 const router = express.Router();
 
@@ -19,12 +20,16 @@ export default (app: express.Router) => {
     res.status(200).json(members);
   }))
 
-  router.post('/:url/member', checkAuthenticated, checkWorkspaceOwner, checkUserIdNotInWorkspace, asyncHandler(async (req, res, next) => {
+  router.post('/:url/member', checkAuthenticated, checkWorkspaceOwner, asyncHandler(async (req, res, next) => {
     const workspaceServiceInst = Container.get(WorkspaceService);
     const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.url);
     const userServiceInst = Container.get(UserService);
     const user = await userServiceInst.getUserByEmail(req.body.email);
     const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
+    const isMember = await workspaceMemberServiceInst.checkWorkspaceMember(req.params.url, user.id);
+    if(isMember) {
+      throw new CustomError(401, "이미 Workspace에 회원이 존재합니다.");
+    }
     await workspaceMemberServiceInst.createWorkspaceMember({
       userId: user.id,
       workspaceId: workspace.id,

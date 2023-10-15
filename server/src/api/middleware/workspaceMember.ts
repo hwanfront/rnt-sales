@@ -24,15 +24,6 @@ export const checkUserIdInWorkspace = asyncHandler(async (req: Request, res: Res
   next();
 })
 
-export const checkUserIdNotInWorkspace = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
-  const isMember = await workspaceMemberServiceInst.checkWorkspaceMember(req.params.url, parseInt(req.params.id, 10));
-  if(isMember) {
-    throw new CustomError(401, "이미 Workspace에 회원이 존재합니다.");
-  }
-  next();
-})
-
 export const checkUserHasEditPermission = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
   const hasEditPermission = await workspaceMemberServiceInst.checkUserHasEditPermission(req.params.url, req.user!.id);
