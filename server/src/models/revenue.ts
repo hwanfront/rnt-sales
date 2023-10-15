@@ -3,6 +3,7 @@ import { sequelize } from './sequelize';
 import type { SequelizeDB } from ".";
 import Workspace from "./workspace";
 import Item from "./item";
+import RevenueDetail from "./revenueDetail";
 
 class Revenue extends Model<InferAttributes<Revenue>, InferCreationAttributes<Revenue>> {
   declare id: CreationOptional<number>;
@@ -11,6 +12,9 @@ class Revenue extends Model<InferAttributes<Revenue>, InferCreationAttributes<Re
   declare amount: string;
   declare workspaceId: ForeignKey<Workspace['id']>;
   declare itemId: ForeignKey<Item['id']>;
+
+  declare detail?: RevenueDetail;
+  declare item?: Item;
 }
 
 Revenue.init({

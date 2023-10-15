@@ -15,8 +15,16 @@ export default (app: express.Router) => {
     const workspaceServiceInst = Container.get(WorkspaceService);
     const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.url);
     const revenueServiceInst = Container.get(RevenueService);
-    const revenues = await revenueServiceInst.getRevenuesByUrl(workspace.id);
-    res.status(200).json(revenues);
+    const revenues = await revenueServiceInst.getRevenuesByworkspaceId(workspace.id);
+    res.status(200).json(revenues.map((revenue) => ({
+      id: revenue.id,
+      month: revenue.month,
+      company: revenue.company,
+      amount: revenue.amount,
+      day: revenue.detail?.day,
+      comment: revenue.detail?.comment || null,
+      item: revenue.item?.name || null,
+    })));
   }))
 
   router.get('/:url/revenue/:id', checkAuthenticated, checkUserInWorkspace, asyncHandler(async (req, res, next) => {

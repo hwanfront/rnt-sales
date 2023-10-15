@@ -14,9 +14,26 @@ class RevenueService {
     @Inject('itemModel') private itemModel: Models.Item,
   ){}
 
-  public async getRevenuesByUrl(workspaceId: number): Promise<Revenue[]> {
+  public async getRevenuesByworkspaceId(workspaceId: number): Promise<Revenue[]> {
     const revenues = await this.revenueModel.findAll({
       where: { workspaceId },
+      attributes: ["id", "month", "company", "amount"],
+      include: [{
+        model: this.revenueDetailModel,
+        as: "detail",
+        attributes: ["day", "comment"],
+      }, {
+        model: this.itemModel,
+        as: "item",
+        attributes: ["name"],
+      }]
+    })
+    
+    return revenues;
+  }
+
+  public async getRevenueById(id: number): Promise<Revenue> {
+    const revenues = await this.revenueModel.findByPk(id, {
       attributes: ["id", "month", "company", "amount"],
       include: [{
         model: this.revenueDetailModel,
@@ -28,13 +45,12 @@ class RevenueService {
         attributes: ["id", "name"],
       }]
     })
-    
+
+    if(!revenues) {
+      throw new CustomError(404, "매출이 존재하지 않습니다.");
+    }
+
     return revenues;
-  }
-
-  public async getRevenueById(id: number): Promise<Revenue> {
-
-    return {} as Revenue;
   }
 
   public async createRevenue(createRevenueDTO: CreateRevenueDTO): Promise<Revenue> {
