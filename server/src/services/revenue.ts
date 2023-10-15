@@ -14,18 +14,9 @@ class RevenueService {
     @Inject('itemModel') private itemModel: Models.Item,
   ){}
 
-  public async getRevenuesByUrl(url: string): Promise<Revenue[]> {
-    const workspace = await this.workspaceModel.findOne({ 
-      where: { url }, 
-      attributes: ["id"],
-    })
-
-    if(!workspace) {
-      throw new CustomError(404, "존재하지 않는 URL입니다.");
-    }
-
+  public async getRevenuesByUrl(workspaceId: number): Promise<Revenue[]> {
     const revenues = await this.revenueModel.findAll({
-      where: { workspaceId: workspace.id },
+      where: { workspaceId },
       attributes: ["id", "month", "company", "amount"],
       include: [{
         model: this.revenueDetailModel,
