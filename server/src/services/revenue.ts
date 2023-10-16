@@ -60,6 +60,7 @@ class RevenueService {
       month: createRevenueDTO.month,
       company: createRevenueDTO.company,
       amount: createRevenueDTO.amount,
+      itemId: createRevenueDTO.itemId,
       workspaceId: createRevenueDTO.workspaceId,
     }, { transaction });
 
