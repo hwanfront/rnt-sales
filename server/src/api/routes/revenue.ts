@@ -3,6 +3,7 @@ import Container from 'typedi';
 import asyncHandler from 'express-async-handler';
 
 import { checkAuthenticated, checkUserHasEditPermission, checkUserInWorkspace } from '../middleware';
+import { sequelize } from '../../models';
 import RevenueService from '../../services/revenue';
 import WorkspaceService from '../../services/workspace';
 
@@ -21,7 +22,7 @@ export default (app: express.Router) => {
       month: revenue.month,
       company: revenue.company,
       amount: revenue.amount,
-      day: revenue.detail?.day,
+      day: revenue.detail?.day || null,
       comment: revenue.detail?.comment || null,
       item: revenue.item?.name || null,
     })));
@@ -33,9 +34,35 @@ export default (app: express.Router) => {
     res.status(200).json(revenue);
   }))
 
-  router.post('/:url/revenue', checkAuthenticated, checkUserInWorkspace, checkUserHasEditPermission, asyncHandler(async (req, res, next) => {
-    
-  }))
+  router.post('/:url/revenue', checkAuthenticated, checkUserInWorkspace, checkUserHasEditPermission, async (req, res, next) => {
+    const transaction = await sequelize.transaction();
+    try {
+      const workspaceServiceInst = Container.get(WorkspaceService);
+      const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.url);
+      const revenueServiceInst = Container.get(RevenueService);
+      const revenue = await revenueServiceInst.createRevenue({
+        month: req.body.month,
+        company: req.body.company,
+        amount: req.body.amount,
+        workspaceId: workspace.id,
+        itemId: req.body.itemId,
+      }, transaction)
+
+      if(req.body.day || req.body.comment) {
+        await revenueServiceInst.createRevenueDetail({
+          id: revenue.id,
+          day: req.body?.day,
+          comment: req.body?.comment,
+        }, transaction)
+      }
+
+      transaction.commit();
+      res.status(201).send("매출 생성 성공");
+    } catch (error) {
+      transaction.rollback();
+      return next(error);
+    }
+  })
 
   router.patch('/:url/revenue/:id', checkAuthenticated, checkUserInWorkspace, checkUserHasEditPermission, asyncHandler(async (req, res, next) => {
     

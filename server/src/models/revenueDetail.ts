@@ -5,8 +5,8 @@ import Revenue from "./revenue";
 
 class RevenueDetail extends Model<InferAttributes<RevenueDetail>, InferCreationAttributes<RevenueDetail>> {
   declare id: ForeignKey<Revenue['id']>;
-  declare day: number;
-  declare comment: string;
+  declare day?: number;
+  declare comment?: string;
 }
 
 RevenueDetail.init({

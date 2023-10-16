@@ -9,7 +9,7 @@ class Revenue extends Model<InferAttributes<Revenue>, InferCreationAttributes<Re
   declare id: CreationOptional<number>;
   declare month: number;
   declare company: string;
-  declare amount: string;
+  declare amount: number;
   declare workspaceId: ForeignKey<Workspace['id']>;
   declare itemId: ForeignKey<Item['id']>;
 
