@@ -121,8 +121,13 @@ class RevenueService {
   }
 
   public async removeRevenue(id: number): Promise<void> {
+    const removed = await this.revenueModel.destroy({
+      where: { id },
+    })
 
-    return;
+    if(!removed) {
+      throw new CustomError(400, "Workspace 삭제 실패!")
+    }
   }
 }
 

@@ -81,7 +81,7 @@ export default (app: express.Router) => {
         day: req.body?.day,
         comment: req.body?.comment,
       }, transaction);
-      
+
       transaction.commit();
       res.status(201).send("매출 수정 성공");
     } catch (error) {
@@ -90,7 +90,9 @@ export default (app: express.Router) => {
     }
   }))
 
-  router.delete('/:url/revenue/:id', checkAuthenticated, checkUserInWorkspace, checkUserHasEditPermission, asyncHandler(async (req, res, next) => {
-    
+  router.delete('/:url/revenue/:id', checkAuthenticated, checkUserInWorkspace, checkUserHasEditPermission, checkRevenueIdInWorkspace, asyncHandler(async (req, res, next) => {
+    const revenueServiceInst = Container.get(RevenueService);
+    await revenueServiceInst.removeRevenue(parseInt(req.params.id));
+    res.status(200).send("매출 삭제 성공");
   }))
 }
