@@ -8,4 +8,4 @@ export interface IRevenue {
 }
 
 export interface CreateRevenueDTO extends Omit<IRevenue, 'id'> {}
-export interface UpdateRevenueDTO extends Partial<Omit<IRevenue, 'id'>> {}
+export interface UpdateRevenueDTO extends Partial<Omit<IRevenue, 'id' | 'workspaceId'>> {}

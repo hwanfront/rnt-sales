@@ -6,6 +6,8 @@ import { checkAuthenticated, checkUserHasEditPermission, checkUserInWorkspace } 
 import { sequelize } from '../../models';
 import RevenueService from '../../services/revenue';
 import WorkspaceService from '../../services/workspace';
+import CustomError from '../../utils/CustomError';
+import { checkRevenueIdInWorkspace } from '../middleware/revenue';
 
 const router = express.Router();
 
@@ -64,8 +66,28 @@ export default (app: express.Router) => {
     }
   })
 
-  router.patch('/:url/revenue/:id', checkAuthenticated, checkUserInWorkspace, checkUserHasEditPermission, asyncHandler(async (req, res, next) => {
-    
+  router.patch('/:url/revenue/:id', checkAuthenticated, checkUserInWorkspace, checkUserHasEditPermission, checkRevenueIdInWorkspace, asyncHandler(async (req, res, next) => {
+    const transaction = await sequelize.transaction();
+    try {
+      const revenueServiceInst = Container.get(RevenueService);
+      await revenueServiceInst.updateRevenue(parseInt(req.params.id, 10),{
+        month: req.body.month,
+        company: req.body.company,
+        amount: req.body.amount,
+        itemId: req.body.itemId,
+      }, transaction);
+
+      await revenueServiceInst.updateRevenueDetail(parseInt(req.params.id, 10), {
+        day: req.body?.day,
+        comment: req.body?.comment,
+      }, transaction);
+      
+      transaction.commit();
+      res.status(201).send("매출 수정 성공");
+    } catch (error) {
+      transaction.rollback();
+      next(error);
+    }
   }))
 
   router.delete('/:url/revenue/:id', checkAuthenticated, checkUserInWorkspace, checkUserHasEditPermission, asyncHandler(async (req, res, next) => {

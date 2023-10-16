@@ -4,7 +4,7 @@ import Revenue from '../models/revenue';
 import { CreateRevenueDTO, UpdateRevenueDTO } from '../interfaces/IRevenue';
 import CustomError from '../utils/CustomError';
 import { Transaction } from 'sequelize';
-import { CreateRevenueDetailDTO } from '../interfaces/IRevenueDetail';
+import { CreateRevenueDetailDTO, UpdateRevenueDetailDTO } from '../interfaces/IRevenueDetail';
 
 
 @Service()
@@ -15,6 +15,16 @@ class RevenueService {
     @Inject('revenueDetailModel') private revenueDetailModel: Models.RevenueDetail,
     @Inject('itemModel') private itemModel: Models.Item,
   ){}
+
+  public async checkRevenueInWorkspace(revenueId: number, workspaceId: number, ): Promise<void> {
+    const existRevenue = await this.revenueModel.findOne({
+      where: { id: revenueId, workspaceId }
+    })
+    
+    if(!existRevenue) {
+      throw new CustomError(401, "해당 workspace에 매출에 대한 권한이 없습니다.");
+    }
+  }
 
   public async getRevenuesByworkspaceId(workspaceId: number): Promise<Revenue[]> {
     const revenues = await this.revenueModel.findAll({
@@ -65,27 +75,49 @@ class RevenueService {
     }, { transaction });
 
     if(!newRevenue) {
-      throw new CustomError(400, "Workspace 생성 실패!");
+      throw new CustomError(400, "매출 생성 실패!");
     }
 
     return newRevenue;
   }
 
-  public async createRevenueDetail(createRevenueDetail: CreateRevenueDetailDTO, transaction?: Transaction): Promise<void> {
+  public async createRevenueDetail(createRevenueDetailDTO: CreateRevenueDetailDTO, transaction?: Transaction): Promise<void> {
     const newRevenue = await this.revenueDetailModel.create({
-      id: createRevenueDetail.id,
-      day: createRevenueDetail.day,
-      comment: createRevenueDetail.comment,
+      id: createRevenueDetailDTO.id,
+      day: createRevenueDetailDTO.day,
+      comment: createRevenueDetailDTO.comment,
     }, { transaction });
 
     if(!newRevenue) {
-      throw new CustomError(400, "Workspace 생성 실패!");
+      throw new CustomError(400, "매출 생성 실패!");
     }
   }
 
-  public async updateRevenue(id: number, updateRevenueDTO: UpdateRevenueDTO): Promise<void> {
+  public async updateRevenue(id: number, updateRevenueDTO: UpdateRevenueDTO, transaction?: Transaction): Promise<void> {
+    const updated = await this.revenueModel.update(updateRevenueDTO, {
+      where: { id },
+      transaction,
+    })
 
-    return;
+    if(!updated) {
+      throw new CustomError(400, "매출 수정 실패!");
+    }
+  }
+
+  public async updateRevenueDetail(id: number, updateRevenueDetailDTO: UpdateRevenueDetailDTO, transaction?: Transaction): Promise<void> {
+    await this.revenueDetailModel.findOrCreate({
+      where: { id },
+      defaults: { id },
+    })
+    
+    const updated = await this.revenueDetailModel.update(updateRevenueDetailDTO, {
+      where: { id },
+      transaction,
+    })
+
+    if(!updated) {
+      throw new CustomError(400, "매출 수정 실패!");
+    }
   }
 
   public async removeRevenue(id: number): Promise<void> {

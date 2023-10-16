@@ -5,4 +5,4 @@ export interface IRevenueDetail {
 }
 
 export interface CreateRevenueDetailDTO extends IRevenueDetail {}
-export interface UpdateRevenueDetailDTO extends Omit<IRevenueDetail, 'id'> {}
+export interface UpdateRevenueDetailDTO extends Partial<Omit<IRevenueDetail, 'id'>> {}
