@@ -45,7 +45,7 @@ class RevenueService {
   }
 
   public async getRevenueById(id: number): Promise<Revenue> {
-    const revenues = await this.revenueModel.findByPk(id, {
+    const revenue = await this.revenueModel.findByPk(id, {
       attributes: ["id", "month", "company", "amount"],
       include: [{
         model: this.revenueDetailModel,
@@ -58,11 +58,11 @@ class RevenueService {
       }]
     })
 
-    if(!revenues) {
+    if(!revenue) {
       throw new CustomError(404, "매출이 존재하지 않습니다.");
     }
 
-    return revenues;
+    return revenue;
   }
 
   public async createRevenue(createRevenueDTO: CreateRevenueDTO, transaction?: Transaction): Promise<Revenue> {
