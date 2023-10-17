@@ -1,9 +1,9 @@
-import { Application, NextFunction, Request, Response } from "express";
-
-import config from "../config";
 import router from "../api";
-import CustomError from "../utils/CustomError";
+import config from "../config";
 import { logger } from "./logger";
+import CustomError from "../utils/CustomError";
+
+import type { Application, NextFunction, Request, Response } from "express";
 
 export default ({ app }: { app: Application }) => {
   app.use(config.api.prefix, router());

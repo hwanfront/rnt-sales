@@ -1,10 +1,11 @@
 import { Service, Inject } from 'typedi';
 
 import Revenue from '../models/revenue';
-import { CreateRevenueDTO, UpdateRevenueDTO } from '../interfaces/IRevenue';
 import CustomError from '../utils/CustomError';
-import { Transaction } from 'sequelize';
-import { CreateRevenueDetailDTO, UpdateRevenueDetailDTO } from '../interfaces/IRevenueDetail';
+
+import type { Transaction } from 'sequelize';
+import type { CreateRevenueDTO, UpdateRevenueDTO } from '../interfaces/IRevenue';
+import type { CreateRevenueDetailDTO, UpdateRevenueDetailDTO } from '../interfaces/IRevenueDetail';
 
 
 @Service()

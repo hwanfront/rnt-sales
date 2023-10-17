@@ -2,9 +2,8 @@ import express from 'express';
 import Container from 'typedi';
 import asyncHandler from 'express-async-handler';
 
-import { checkAuthenticated, checkUserIdInWorkspace, checkUserInWorkspace } from '../middleware';
+import { checkAuthenticated, checkUserIdInWorkspace, checkUserInWorkspace, checkWorkspaceOwner } from '../middleware';
 import WorkspaceMemberService from '../../services/workspaceMember';
-import { checkWorkspaceOwner } from '../middleware/workspace';
 import WorkspaceService from '../../services/workspace';
 import UserService from '../../services/user';
 import CustomError from '../../utils/CustomError';

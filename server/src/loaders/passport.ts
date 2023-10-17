@@ -1,13 +1,15 @@
 import passport from 'passport';
 import Container from 'typedi';
-import { Logger } from 'winston';
-import { Strategy as LocalStrategy, VerifyFunction } from 'passport-local';
-import type { Application } from "express";
+import { Strategy as LocalStrategy } from 'passport-local';
 
-import AuthService from '../services/auth';
 import User from '../models/user';
-import CustomError from '../utils/CustomError';
+import AuthService from '../services/auth';
 import UsersService from '../services/user';
+import CustomError from '../utils/CustomError';
+
+import type { Application } from "express";
+import type { VerifyFunction } from 'passport-local';
+import type { Logger } from 'winston';
 
 const serialize = (user: User, done: any) => {
   done(null, user.id)
