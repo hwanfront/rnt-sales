@@ -1,11 +1,13 @@
 import passport from 'passport';
 import Container from 'typedi';
-import { Strategy as LocalStrategy, VerifyFunction } from 'passport-local';
-import type { Application } from "express";
+import { Strategy as LocalStrategy } from 'passport-local';
 
 import AuthService from '../services/auth';
-import User from '../models/user';
 import UsersService from '../services/user';
+
+import type { Application } from "express";
+import type { VerifyFunction } from 'passport-local';
+import type User from '../models/user';
 
 const serialize = (user: User, done: any) => {
   done(null, user.id)

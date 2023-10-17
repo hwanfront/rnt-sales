@@ -1,10 +1,11 @@
 import Container from "typedi";
-import { CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 
-import User from "./user";
 import { sequelize } from './sequelize';
+import User from "./user";
 import WorkspaceMemberService from "../services/workspaceMember";
 
+import type { CreationOptional, ForeignKey, InferAttributes, InferCreationAttributes } from 'sequelize';
 import type { SequelizeDB } from ".";
 
 class Workspace extends Model<InferAttributes<Workspace>, InferCreationAttributes<Workspace>> {

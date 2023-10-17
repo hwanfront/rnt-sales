@@ -1,9 +1,9 @@
 import { Service, Inject } from 'typedi';
-import { Transaction } from 'sequelize';
 
 import Workspace from '../models/workspace';
 import CustomError from '../utils/CustomError';
 
+import type { Transaction } from 'sequelize';
 import type { CreateWorkspaceDTO, UpdateWorkspaceDTO } from '../interfaces/IWorkspace';
 
 @Service()

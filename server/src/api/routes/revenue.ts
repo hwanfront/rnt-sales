@@ -2,12 +2,10 @@ import express from 'express';
 import Container from 'typedi';
 import asyncHandler from 'express-async-handler';
 
-import { checkAuthenticated, checkUserHasEditPermission, checkUserInWorkspace } from '../middleware';
+import { checkAuthenticated, checkUserHasEditPermission, checkUserInWorkspace, checkRevenueIdInWorkspace } from '../middleware';
 import { sequelize } from '../../models';
 import RevenueService from '../../services/revenue';
 import WorkspaceService from '../../services/workspace';
-import CustomError from '../../utils/CustomError';
-import { checkRevenueIdInWorkspace } from '../middleware/revenue';
 
 const router = express.Router();
 

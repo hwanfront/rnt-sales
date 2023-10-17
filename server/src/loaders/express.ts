@@ -1,14 +1,14 @@
 import express from "express";
-import path from 'path';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import hpp from 'hpp';
 import helmet from 'helmet';
-import type { Application } from "express";
-import type { SessionOptions } from "express-session";
 
 import config from "../config"
+
+import type { Application } from "express";
+import type { SessionOptions } from "express-session";
 
 export default ({ app }: { app: Application }) => {
   const prod = process.env.NODE_ENV === "production";
