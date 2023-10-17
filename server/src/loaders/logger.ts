@@ -1,11 +1,12 @@
 import fs from 'fs';
 import winston from 'winston';
-import DailyRotateFile from 'winston-daily-rotate-file';
-import morgan, { StreamOptions } from 'morgan';
+import morgan from 'morgan';
 import moment from 'moment';
-import type { Application } from 'express';
+import DailyRotateFile from 'winston-daily-rotate-file';
 
 import config from '../config';
+
+import type { Application } from 'express';
 
 const logFormat = winston.format.printf((info: winston.Logform.TransformableInfo) => {
   return `[${moment().format('YYYY-MM-DD HH:mm:ss')}] ${info.level} - ${info.message}`
@@ -50,7 +51,7 @@ export const logger = winston.createLogger({
 });
 
 export default ({ app }: { app: Application }) => {
-  const stream: StreamOptions = { 
+  const stream: morgan.StreamOptions = { 
     write: (message) => logger.info(message) 
   }
   

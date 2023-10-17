@@ -28,7 +28,7 @@ class AuthService {
   }
 
   public localLogin = (req: Request, res: Response, next: NextFunction): void => {
-    this.passport.authenticate('local',(error: Error, user: Express.User, info: { message: string }) => {
+    this.passport.authenticate('local',async (error: CustomError, user: Express.User, info: { message: string }) => {
       if(error) {
         return next(error);
       }
@@ -41,8 +41,17 @@ class AuthService {
         if(loginErr) {
           return next(loginErr);
         }
-        const existUser = await this.userService.getUserById(user.id);
-        return res.status(200).json(existUser);
+
+        try {
+          const existUser = await this.userService.getUserById(user.id);
+          return res.status(200).json({
+            id: existUser.id,
+            nickname: existUser.nickname,
+            email: existUser.email,
+          });
+        } catch(error) {
+          next(error);
+        }
       })
     })(req, res, next);
   }

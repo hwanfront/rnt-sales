@@ -1,12 +1,12 @@
 import { Logger } from 'winston';
 import { Model } from "sequelize";
+import { PassportStatic } from 'passport';
 import User from "../src/models/user";
 import Revenue from '../src/models/revenue';
 import RevenueDetail from '../src/models/revenueDetail';
 import Item from '../src/models/item';
 import Workspace from '../src/models/workspace';
 import WorkspaceMember from '../src/models/workspaceMember';
-import { PassportStatic } from 'passport';
 
 declare global {
   namespace Models {

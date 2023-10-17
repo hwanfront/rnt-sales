@@ -1,9 +1,9 @@
 import { Service, Inject } from 'typedi';
-import { Transaction } from 'sequelize';
 
 import User from '../models/user';
 import CustomError from '../utils/CustomError';
 
+import type { Transaction } from 'sequelize';
 import type { UpdateUserDTO } from '../interfaces/IUser';
 
 @Service()

@@ -1,14 +1,11 @@
 import 'reflect-metadata';
-import 'moment-timezone';
 import express from 'express';
-import moment from 'moment-timezone';
 
 import loaders from './loaders';
 import config from './config';
 import { logger } from './loaders/logger';
 
 require('dotenv').config();
-moment.tz.setDefault('Asia/Seoul');
 
 async function startServer() {
   const app = express();
@@ -21,7 +18,6 @@ async function startServer() {
     logger.error(error);
     process.exit(1);
   });
-
 }
 
 startServer();

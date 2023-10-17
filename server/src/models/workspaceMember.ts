@@ -1,7 +1,10 @@
-import { CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model } from "sequelize";
+import { DataTypes, Model } from "sequelize";
+
 import { sequelize } from './sequelize';
 import User from "./user";
 import Workspace from "./workspace";
+
+import { CreationOptional, ForeignKey, InferAttributes, InferCreationAttributes } from "sequelize";
 
 class WorkspaceMember extends Model<InferAttributes<WorkspaceMember>, InferCreationAttributes<WorkspaceMember>> {
   declare userId: ForeignKey<User['id']>;

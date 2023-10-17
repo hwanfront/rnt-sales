@@ -1,27 +1,25 @@
 import passport from 'passport';
 import Container from 'typedi';
-import { Logger } from 'winston';
-import { Strategy as LocalStrategy, VerifyFunction } from 'passport-local';
-import type { Application } from "express";
+import { Strategy as LocalStrategy } from 'passport-local';
 
 import AuthService from '../services/auth';
-import User from '../models/user';
-import CustomError from '../utils/CustomError';
 import UsersService from '../services/user';
+
+import type { Application } from "express";
+import type { VerifyFunction } from 'passport-local';
+import type User from '../models/user';
 
 const serialize = (user: User, done: any) => {
   done(null, user.id)
 }
 
 const deserialize = async (id: number, done: any) => {
-  const logger = Container.get<Logger>('logger');
   try {
     const userServiceInst = Container.get(UsersService);
     const user = await userServiceInst.getUserById(id);
     done(null, user);
   } catch (error) {
-    logger.error(error);
-    done(error);
+    done(null, false, error);
   }
 }
 
@@ -32,18 +30,13 @@ const local = () => {
   };
 
   const verify: VerifyFunction = async (email, password, done) => {
-    const logger = Container.get<Logger>('logger');
     try {
       const authServiceInst = Container.get(AuthService);
       const user = await authServiceInst.findEmail(email);
       await authServiceInst.comparePassword(password, user.dataValues.password);
-      return done(null, user);
+      done(null, user);
     } catch (error) {
-      if(error instanceof CustomError) {
-        return done(null, false, { message: error.message });
-      }
-      logger.error(error);
-      return done(error);
+      done(null, false, { message: "이메일 또는 비밀번호가 틀렸습니다." });
     }
   };
 
