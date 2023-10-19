@@ -5,7 +5,6 @@ import asyncHandler from 'express-async-handler';
 import { checkAuthenticated, checkItemInWorkspace, checkUserHasEditPermission, checkUserInWorkspace } from '../middleware';
 import WorkspaceService from '../../services/workspace';
 import ItemService from '../../services/item';
-import CustomError from '../../utils/CustomError';
 
 const router = express.Router();
 
