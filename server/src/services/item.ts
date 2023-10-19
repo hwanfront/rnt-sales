@@ -17,8 +17,16 @@ class ItemService {
       where: { workspaceId },
       attributes: ["id", "name"],
     })
-    
+
     return items;
+  }
+
+  public async createItem(createRevenueDTO: CreateItemDTO): Promise<void> {
+    const created = await this.itemModel.create(createRevenueDTO);
+  
+    if(!created) {
+      throw new CustomError(400, "항목 생성 실패!");
+    }
   }
 }
 

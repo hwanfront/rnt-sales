@@ -2,7 +2,7 @@ import express from 'express';
 import Container from 'typedi';
 import asyncHandler from 'express-async-handler';
 
-import { checkAuthenticated, checkUserInWorkspace } from '../middleware';
+import { checkAuthenticated, checkUserHasEditPermission, checkUserInWorkspace } from '../middleware';
 import WorkspaceService from '../../services/workspace';
 import ItemService from '../../services/item';
 import CustomError from '../../utils/CustomError';
@@ -20,8 +20,15 @@ export default (app: express.Router) => {
     res.status(200).json(items);
   }))
 
-  router.post('/:url/item', checkAuthenticated, asyncHandler(async (req, res, next) => {
-
+  router.post('/:url/item', checkAuthenticated, checkUserInWorkspace, checkUserHasEditPermission, asyncHandler(async (req, res, next) => {
+    const workspaceServiceInst = Container.get(WorkspaceService);
+    const workspace = await workspaceServiceInst.getWorkspaceByUrl(req.params.url);
+    const itemServiceInst = Container.get(ItemService);
+    await itemServiceInst.createItem({
+      name: req.body.name,
+      workspaceId: workspace.id,
+    });
+    res.status(201).send("항목 생성 성공");
   }))
 
   router.patch('/:url/item/:id', checkAuthenticated, asyncHandler(async (req, res, next) => {
