@@ -47,6 +47,16 @@ class ItemService {
       throw new CustomError(400, "항목 수정 실패!");
     }
   }
+
+  public async removeItem(id: number): Promise<void> {
+    const removed = await this.itemModel.destroy({
+      where: { id },
+    })
+
+    if(!removed) {
+      throw new CustomError(400, "항목 삭제 실패!");
+    }
+  }
 }
 
 export default ItemService;

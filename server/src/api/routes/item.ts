@@ -39,7 +39,9 @@ export default (app: express.Router) => {
     res.status(201).send("항목 수정 성공");
   }))
 
-  router.delete('/:url/item/:id', checkAuthenticated, asyncHandler(async (req, res, next) => {
-
+  router.delete('/:url/item/:id', checkAuthenticated, checkUserInWorkspace, checkUserHasEditPermission, checkItemInWorkspace, asyncHandler(async (req, res, next) => {
+    const itemServiceInst = Container.get(ItemService);
+    await itemServiceInst.removeItem(parseInt(req.params.id));
+    res.status(200).send("항목 삭제 성공");
   }))
 }
