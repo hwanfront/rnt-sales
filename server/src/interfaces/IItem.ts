@@ -5,4 +5,4 @@ export interface IItem {
 }
 
 export interface CreateItemDTO extends Omit<IItem, 'id'> {}
-export interface UpdateItemDTO extends Partial<Omit<IItem, 'id'>> {}
+export interface UpdateItemDTO extends Partial<Omit<IItem, 'id' | 'workspaceId'>> {}
