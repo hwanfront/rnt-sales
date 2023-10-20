@@ -16,7 +16,7 @@ class RevenueService {
     @Inject('itemModel') private itemModel: Models.Item,
   ){}
 
-  public async checkRevenueInWorkspace(revenueId: number, workspaceId: number, ): Promise<void> {
+  public async checkRevenueInWorkspace(revenueId: number, workspaceId: number): Promise<void> {
     const existRevenue = await this.revenueModel.findOne({
       where: { id: revenueId, workspaceId }
     })
