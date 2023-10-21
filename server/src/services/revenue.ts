@@ -11,13 +11,12 @@ import type { CreateRevenueDetailDTO, UpdateRevenueDetailDTO } from '../interfac
 @Service()
 class RevenueService {
   constructor(
-    @Inject('workspaceModel') private workspaceModel: Models.Workspace,
     @Inject('revenueModel') private revenueModel: Models.Revenue,
     @Inject('revenueDetailModel') private revenueDetailModel: Models.RevenueDetail,
     @Inject('itemModel') private itemModel: Models.Item,
   ){}
 
-  public async checkRevenueInWorkspace(revenueId: number, workspaceId: number, ): Promise<void> {
+  public async checkRevenueInWorkspace(revenueId: number, workspaceId: number): Promise<void> {
     const existRevenue = await this.revenueModel.findOne({
       where: { id: revenueId, workspaceId }
     })
