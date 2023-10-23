@@ -2,6 +2,7 @@ export interface IItem {
   id: number;
   name: string;
   workspaceId: number;
+  salesTarget: number;
 }
 
 export interface CreateItemDTO extends Omit<IItem, 'id'> {}
