@@ -26,6 +26,7 @@ export default (app: express.Router) => {
     await itemServiceInst.createItem({
       name: req.body.name,
       workspaceId: workspace.id,
+      salesTarget: parseInt(req.body.salesTarget, 10)
     });
     res.status(201).send("항목 생성 성공");
   }))
@@ -34,6 +35,7 @@ export default (app: express.Router) => {
     const itemServiceInst = Container.get(ItemService);
     await itemServiceInst.updateItem(parseInt(req.params.id, 10), {
       name: req.body.name,
+      salesTarget: parseInt(req.body.salesTarget, 10)
     })
     res.status(201).send("항목 수정 성공");
   }))

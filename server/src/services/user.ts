@@ -1,7 +1,7 @@
 import { Service, Inject } from 'typedi';
 
 import User from '../models/user';
-import CustomError from '../utils/CustomError';
+import HttpException from '../utils/HttpException';
 
 import type { Transaction } from 'sequelize';
 import type { UpdateUserDTO } from '../interfaces/IUser';
@@ -19,7 +19,7 @@ class UserService {
     });
 
     if(!user) {
-      throw new CustomError(404, "존재하지 않는 사용자입니다.");
+      throw new HttpException(404, "존재하지 않는 사용자입니다.");
     }
     
     return user;
@@ -32,7 +32,7 @@ class UserService {
     });
 
     if(!user) {
-      throw new CustomError(404, "존재하지 않는 사용자입니다.");
+      throw new HttpException(404, "존재하지 않는 사용자입니다.");
     }
     
     return user;
@@ -44,7 +44,7 @@ class UserService {
     })
 
     if(!updated) {
-      throw new CustomError(400, "회원정보 수정 실패!")
+      throw new HttpException(400, "회원정보 수정 실패!")
     }
   }
 
@@ -55,7 +55,7 @@ class UserService {
     })
 
     if(!removed) {
-      throw new CustomError(400, "회원 삭제 실패!")
+      throw new HttpException(400, "회원 삭제 실패!")
     }
   }
 }

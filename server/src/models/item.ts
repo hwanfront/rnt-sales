@@ -9,6 +9,7 @@ import type { SequelizeDB } from ".";
 class Item extends Model<InferAttributes<Item>, InferCreationAttributes<Item>> {
   declare id: CreationOptional<number>;
   declare name: string;
+  declare salesTarget: number;
   declare workspaceId: ForeignKey<Workspace['id']>;
 }
 
@@ -20,6 +21,10 @@ Item.init({
   },
   name: {
     type: DataTypes.STRING(30),
+    allowNull: false,
+  },
+  salesTarget: {
+    type: DataTypes.BIGINT.UNSIGNED,
     allowNull: false,
   },
   workspaceId: {

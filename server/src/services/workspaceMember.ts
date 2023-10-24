@@ -1,7 +1,7 @@
 import { Service, Inject } from 'typedi';
 
 import User from '../models/user';
-import CustomError from '../utils/CustomError';
+import HttpException from '../utils/HttpException';
 
 import type { Transaction } from 'sequelize';
 import type { CreateWorkspaceMemberDTO, UpdateWorkspaceMemberDTO } from '../interfaces/IWorkspaceMember';
@@ -21,7 +21,7 @@ class WorkspaceMemberService {
     })
 
     if(!workspace) {
-      throw new CustomError(404, "Workspace가 존재하지 않습니다.");
+      throw new HttpException(404, "Workspace가 존재하지 않습니다.");
     }
 
     const workspaceMember = await this.workspaceMemberModel.findOne({
@@ -41,7 +41,7 @@ class WorkspaceMemberService {
     })
 
     if(!workspace) {
-      throw new CustomError(404, "Workspace가 존재하지 않습니다.");
+      throw new HttpException(404, "Workspace가 존재하지 않습니다.");
     }
 
     const workspaceMember = await this.workspaceMemberModel.findOne({
@@ -52,7 +52,7 @@ class WorkspaceMemberService {
     })
 
     if(!workspaceMember) {
-      throw new CustomError(404, "Workspace의 멤버가 아닙니다.");
+      throw new HttpException(404, "Workspace의 멤버가 아닙니다.");
     }
 
     return workspaceMember.editPermission;
@@ -72,7 +72,7 @@ class WorkspaceMemberService {
     });
 
     if(!workspaceMembers) {
-      throw new CustomError(401, "Workspace가 존재하지 않습니다.");
+      throw new HttpException(401, "Workspace가 존재하지 않습니다.");
     }
 
     return workspaceMembers.members || [];
@@ -82,7 +82,7 @@ class WorkspaceMemberService {
     const createdMember = await this.workspaceMemberModel.create(workspaceMember, { transaction });
 
     if(!createdMember) {
-      throw new CustomError(401, "Workspace에 추가 실패!");
+      throw new HttpException(401, "Workspace에 추가 실패!");
     }
   }
 
@@ -95,7 +95,7 @@ class WorkspaceMemberService {
     })
 
     if(!removed) {
-      throw new CustomError(400, "Workspace 멤버 삭제 실패!")
+      throw new HttpException(400, "Workspace 멤버 삭제 실패!")
     }
   }
 
@@ -108,7 +108,7 @@ class WorkspaceMemberService {
     })
 
     if(!updated) {
-      throw new CustomError(400, "Workspace 멤버 수정 실패!")
+      throw new HttpException(400, "Workspace 멤버 수정 실패!")
     }
   }
 
