@@ -1,7 +1,7 @@
 import { Service, Inject } from 'typedi';
 
 import Item from '../models/item';
-import CustomError from '../utils/CustomError';
+import HttpException from '../utils/HttpException';
 
 import type { CreateItemDTO, UpdateItemDTO } from '../interfaces/IItem';
 
@@ -17,7 +17,7 @@ class ItemService {
     })
     
     if(!existItem) {
-      throw new CustomError(401, "해당 workspace의 항목에 대한 권한이 없습니다.");
+      throw new HttpException(401, "해당 workspace의 항목에 대한 권한이 없습니다.");
     }
   }
 
@@ -34,7 +34,7 @@ class ItemService {
     const created = await this.itemModel.create(createRevenueDTO);
   
     if(!created) {
-      throw new CustomError(400, "항목 생성 실패!");
+      throw new HttpException(400, "항목 생성 실패!");
     }
   }
 
@@ -44,7 +44,7 @@ class ItemService {
     })
 
     if(!updated) {
-      throw new CustomError(400, "항목 수정 실패!");
+      throw new HttpException(400, "항목 수정 실패!");
     }
   }
 
@@ -54,7 +54,7 @@ class ItemService {
     })
 
     if(!removed) {
-      throw new CustomError(400, "항목 삭제 실패!");
+      throw new HttpException(400, "항목 삭제 실패!");
     }
   }
 }

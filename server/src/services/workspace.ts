@@ -1,7 +1,7 @@
 import { Service, Inject } from 'typedi';
 
 import Workspace from '../models/workspace';
-import CustomError from '../utils/CustomError';
+import HttpException from '../utils/HttpException';
 
 import type { Transaction } from 'sequelize';
 import type { CreateWorkspaceDTO, UpdateWorkspaceDTO } from '../interfaces/IWorkspace';
@@ -25,7 +25,7 @@ class WorkspaceService {
     })
 
     if(!userWithWorkspaces) {
-      throw new CustomError(404, "존재하지 않는 사용자입니다.");
+      throw new HttpException(404, "존재하지 않는 사용자입니다.");
     }
 
     return userWithWorkspaces.workspaces || [];
@@ -38,7 +38,7 @@ class WorkspaceService {
     })
 
     if(!workspace) {
-      throw new CustomError(404, "존재하지 않는 URL입니다.");
+      throw new HttpException(404, "존재하지 않는 URL입니다.");
     }
     
     return workspace;
@@ -51,7 +51,7 @@ class WorkspaceService {
     })
     
     if(existWorkspace) {
-      throw new CustomError(403, "이미 사용중인 url입니다.");
+      throw new HttpException(403, "이미 사용중인 url입니다.");
     }
   }
 
@@ -59,7 +59,7 @@ class WorkspaceService {
     const newWorkspace = await this.workspaceModel.create(workspace, { transaction });
 
     if(!newWorkspace) {
-      throw new CustomError(400, "Workspace 생성 실패!");
+      throw new HttpException(400, "Workspace 생성 실패!");
     }
 
     return newWorkspace;
@@ -71,7 +71,7 @@ class WorkspaceService {
     });
 
     if(!updated) {
-      throw new CustomError(400, "Workspace 수정 실패!")
+      throw new HttpException(400, "Workspace 수정 실패!")
     }
   }
 
@@ -82,7 +82,7 @@ class WorkspaceService {
     })
 
     if(!removed) {
-      throw new CustomError(400, "Workspace 삭제 실패!")
+      throw new HttpException(400, "Workspace 삭제 실패!")
     }
   }
 }

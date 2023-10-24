@@ -6,7 +6,7 @@ import { checkAuthenticated, checkUserIdInWorkspace, checkUserInWorkspace, check
 import WorkspaceMemberService from '../../services/workspaceMember';
 import WorkspaceService from '../../services/workspace';
 import UserService from '../../services/user';
-import CustomError from '../../utils/CustomError';
+import HttpException from '../../utils/HttpException';
 
 const router = express.Router();
 
@@ -27,7 +27,7 @@ export default (app: express.Router) => {
     const workspaceMemberServiceInst = Container.get(WorkspaceMemberService);
     const isMember = await workspaceMemberServiceInst.checkWorkspaceMember(req.params.url, user.id);
     if(isMember) {
-      throw new CustomError(401, "이미 Workspace에 회원이 존재합니다.");
+      throw new HttpException(401, "이미 Workspace에 회원이 존재합니다.");
     }
     await workspaceMemberServiceInst.createWorkspaceMember({
       userId: user.id,

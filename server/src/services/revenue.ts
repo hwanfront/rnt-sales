@@ -1,7 +1,7 @@
 import { Service, Inject } from 'typedi';
 
 import Revenue from '../models/revenue';
-import CustomError from '../utils/CustomError';
+import HttpException from '../utils/HttpException';
 
 import type { Transaction } from 'sequelize';
 import type { CreateRevenueDTO, UpdateRevenueDTO } from '../interfaces/IRevenue';
@@ -22,7 +22,7 @@ class RevenueService {
     })
     
     if(!existRevenue) {
-      throw new CustomError(401, "해당 workspace에 매출에 대한 권한이 없습니다.");
+      throw new HttpException(401, "해당 workspace에 매출에 대한 권한이 없습니다.");
     }
   }
 
@@ -59,7 +59,7 @@ class RevenueService {
     })
 
     if(!revenue) {
-      throw new CustomError(404, "매출이 존재하지 않습니다.");
+      throw new HttpException(404, "매출이 존재하지 않습니다.");
     }
 
     return revenue;
@@ -75,7 +75,7 @@ class RevenueService {
     }, { transaction });
 
     if(!newRevenue) {
-      throw new CustomError(400, "매출 생성 실패!");
+      throw new HttpException(400, "매출 생성 실패!");
     }
 
     return newRevenue;
@@ -89,7 +89,7 @@ class RevenueService {
     }, { transaction });
 
     if(!newRevenue) {
-      throw new CustomError(400, "매출 생성 실패!");
+      throw new HttpException(400, "매출 생성 실패!");
     }
   }
 
@@ -100,7 +100,7 @@ class RevenueService {
     })
 
     if(!updated) {
-      throw new CustomError(400, "매출 수정 실패!");
+      throw new HttpException(400, "매출 수정 실패!");
     }
   }
 
@@ -116,7 +116,7 @@ class RevenueService {
     })
 
     if(!updated) {
-      throw new CustomError(400, "매출 수정 실패!");
+      throw new HttpException(400, "매출 수정 실패!");
     }
   }
 
@@ -126,7 +126,7 @@ class RevenueService {
     })
 
     if(!removed) {
-      throw new CustomError(400, "Workspace 삭제 실패!")
+      throw new HttpException(400, "Workspace 삭제 실패!")
     }
   }
 }

@@ -3,7 +3,7 @@ import bcrypt, { genSalt } from 'bcrypt';
 
 import config from '../config';
 import UsersService from './user';
-import CustomError from '../utils/CustomError';
+import HttpException from '../utils/HttpException';
 
 import type { NextFunction, Request, Response } from 'express';
 import type { PassportStatic } from 'passport';
@@ -28,7 +28,7 @@ class AuthService {
   }
 
   public localLogin = (req: Request, res: Response, next: NextFunction): void => {
-    this.passport.authenticate('local',async (error: CustomError, user: Express.User, info: { message: string }) => {
+    this.passport.authenticate('local',async (error: HttpException, user: Express.User, info: { message: string }) => {
       if(error) {
         return next(error);
       }
@@ -66,7 +66,7 @@ class AuthService {
     const result = await bcrypt.compare(data, encrypted);
 
     if(!result) {
-      throw new CustomError(403, '비밀번호가 일치하지 않습니다.');
+      throw new HttpException(403, '비밀번호가 일치하지 않습니다.');
     }
   }
 
@@ -77,7 +77,7 @@ class AuthService {
     });  
 
     if(existUser) {
-      throw new CustomError(404, "이미 사용중인 이메일입니다.");
+      throw new HttpException(404, "이미 사용중인 이메일입니다.");
     }
   }
 
@@ -85,7 +85,7 @@ class AuthService {
     const newUser = await this.userModel.create(user);
 
     if(!newUser) {
-      throw new CustomError(400, "회원가입 실패!");
+      throw new HttpException(400, "회원가입 실패!");
     }
   }
 
@@ -96,7 +96,7 @@ class AuthService {
     });
 
     if(!existUser) {
-      throw new CustomError(404, '존재하지 않는 이메일입니다.');
+      throw new HttpException(404, '존재하지 않는 이메일입니다.');
     }
     
     return existUser;
