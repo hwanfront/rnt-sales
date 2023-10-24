@@ -3,9 +3,8 @@ class HttpException extends Error {
 
   constructor(statusCode: number, message: string) {
     super(message);
-    this.name = "CustomError";
+    this.name = 'CustomError';
     this.statusCode = statusCode;
   }
-
 }
 export default HttpException;

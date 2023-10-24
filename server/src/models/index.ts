@@ -7,13 +7,13 @@ import Item, { associate as associateItem } from './item';
 import Workspace, { associate as associateWorkspace } from './workspace';
 import WorkspaceMember from './workspaceMember';
 
-const sequelizeDB = { 
+const sequelizeDB = {
   User,
   Revenue,
   RevenueDetail,
   Item,
   Workspace,
-  WorkspaceMember
+  WorkspaceMember,
 };
 
 export type SequelizeDB = typeof sequelizeDB;

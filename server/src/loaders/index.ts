@@ -8,16 +8,15 @@ import routerLoader from './router';
 import type { Application } from 'express';
 
 export default async ({ expressApp }: { expressApp: Application }) => {
-
   loggerLoader({ app: expressApp });
   logger.info('Logger loaded');
-  
-  dependencyInjector();
-  logger.info('di container created')
 
-  await sequelizeSyncLoader({ force: false })
+  dependencyInjector();
+  logger.info('di container created');
+
+  await sequelizeSyncLoader({ force: false });
   logger.info('DB loaded and connected');
-  
+
   passportConfig();
   logger.info('passport config loaded');
 
@@ -29,4 +28,4 @@ export default async ({ expressApp }: { expressApp: Application }) => {
 
   routerLoader({ app: expressApp });
   logger.info('router connected');
-}
+};

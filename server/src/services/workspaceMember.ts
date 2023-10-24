@@ -12,24 +12,24 @@ class WorkspaceMemberService {
     @Inject('userModel') private userModel: Models.User,
     @Inject('workspaceModel') private workspaceModel: Models.Workspace,
     @Inject('workspaceMemberModel') private workspaceMemberModel: Models.WorkspaceMember,
-  ){}
+  ) {}
 
   public async checkWorkspaceMember(url: string, userId: number): Promise<boolean> {
     const workspace = await this.workspaceModel.findOne({
       where: { url },
-      attributes: ["id"],
-    })
+      attributes: ['id'],
+    });
 
-    if(!workspace) {
-      throw new HttpException(404, "Workspace가 존재하지 않습니다.");
+    if (!workspace) {
+      throw new HttpException(404, 'Workspace가 존재하지 않습니다.');
     }
 
     const workspaceMember = await this.workspaceMemberModel.findOne({
       where: {
         workspaceId: workspace.id,
-        userId
-      }
-    })
+        userId,
+      },
+    });
 
     return !!workspaceMember;
   }
@@ -37,22 +37,22 @@ class WorkspaceMemberService {
   public async checkUserHasEditPermission(url: string, userId: number): Promise<boolean> {
     const workspace = await this.workspaceModel.findOne({
       where: { url },
-      attributes: ["id"],
-    })
+      attributes: ['id'],
+    });
 
-    if(!workspace) {
-      throw new HttpException(404, "Workspace가 존재하지 않습니다.");
+    if (!workspace) {
+      throw new HttpException(404, 'Workspace가 존재하지 않습니다.');
     }
 
     const workspaceMember = await this.workspaceMemberModel.findOne({
       where: {
         workspaceId: workspace.id,
-        userId
-      }
-    })
+        userId,
+      },
+    });
 
-    if(!workspaceMember) {
-      throw new HttpException(404, "Workspace의 멤버가 아닙니다.");
+    if (!workspaceMember) {
+      throw new HttpException(404, 'Workspace의 멤버가 아닙니다.');
     }
 
     return workspaceMember.editPermission;
@@ -61,28 +61,33 @@ class WorkspaceMemberService {
   public async getWorkspaceMembersByUrl(url: string): Promise<User[]> {
     const workspaceMembers = await this.workspaceModel.findOne({
       where: { url },
-      attributes: ["id", "name", "url", "ownerId"],
-      include: [{
-        model: this.userModel,
-        as: "members",
-        attributes: ["id", "nickname", "email"],
-        through: { as: "status" , attributes: ["editPermission"] },
-        order: [["nickname", "DESC"]],
-      }],
+      attributes: ['id', 'name', 'url', 'ownerId'],
+      include: [
+        {
+          model: this.userModel,
+          as: 'members',
+          attributes: ['id', 'nickname', 'email'],
+          through: { as: 'status', attributes: ['editPermission'] },
+          order: [['nickname', 'DESC']],
+        },
+      ],
     });
 
-    if(!workspaceMembers) {
-      throw new HttpException(401, "Workspace가 존재하지 않습니다.");
+    if (!workspaceMembers) {
+      throw new HttpException(401, 'Workspace가 존재하지 않습니다.');
     }
 
     return workspaceMembers.members || [];
   }
 
-  public async createWorkspaceMember(workspaceMember: CreateWorkspaceMemberDTO, transaction?: Transaction): Promise<void> {
+  public async createWorkspaceMember(
+    workspaceMember: CreateWorkspaceMemberDTO,
+    transaction?: Transaction,
+  ): Promise<void> {
     const createdMember = await this.workspaceMemberModel.create(workspaceMember, { transaction });
 
-    if(!createdMember) {
-      throw new HttpException(401, "Workspace에 추가 실패!");
+    if (!createdMember) {
+      throw new HttpException(401, 'Workspace에 추가 실패!');
     }
   }
 
@@ -91,24 +96,28 @@ class WorkspaceMemberService {
       where: {
         workspaceId,
         userId,
-      }
-    })
+      },
+    });
 
-    if(!removed) {
-      throw new HttpException(400, "Workspace 멤버 삭제 실패!")
+    if (!removed) {
+      throw new HttpException(400, 'Workspace 멤버 삭제 실패!');
     }
   }
 
-  public async updateMemberEditPermission(workspaceMember: UpdateWorkspaceMemberDTO , workspaceId: number, userId: number): Promise<void> {
+  public async updateMemberEditPermission(
+    workspaceMember: UpdateWorkspaceMemberDTO,
+    workspaceId: number,
+    userId: number,
+  ): Promise<void> {
     const updated = await this.workspaceMemberModel.update(workspaceMember, {
       where: {
         workspaceId,
         userId,
-      }
-    })
+      },
+    });
 
-    if(!updated) {
-      throw new HttpException(400, "Workspace 멤버 수정 실패!")
+    if (!updated) {
+      throw new HttpException(400, 'Workspace 멤버 수정 실패!');
     }
   }
 
@@ -116,14 +125,14 @@ class WorkspaceMemberService {
     await this.workspaceMemberModel.destroy({
       where: { workspaceId },
       transaction,
-    })
+    });
   }
 
   public async removeWorkspaceMembersByUserId(userId: number, transaction?: Transaction): Promise<void> {
     await this.workspaceMemberModel.destroy({
       where: { userId },
       transaction,
-    })
+    });
   }
 }
 

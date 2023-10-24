@@ -4,5 +4,5 @@ export interface IWorkspaceMember {
   editPermission: boolean;
 }
 
-export interface CreateWorkspaceMemberDTO extends IWorkspaceMember {};
-export interface UpdateWorkspaceMemberDTO extends Omit<IWorkspaceMember, "workspaceId" | "userId"> {};
+export interface CreateWorkspaceMemberDTO extends IWorkspaceMember {}
+export interface UpdateWorkspaceMemberDTO extends Omit<IWorkspaceMember, 'workspaceId' | 'userId'> {}
