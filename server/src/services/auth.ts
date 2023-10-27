@@ -9,36 +9,34 @@ import type { NextFunction, Request, Response } from 'express';
 import type { PassportStatic } from 'passport';
 import type { CreateUserDTO } from '../interfaces/IUser';
 
-
 @Service()
 class AuthService {
   constructor(
     @Inject() private userService: UsersService,
     @Inject('userModel') private userModel: Models.User,
     @Inject('passport') private passport: PassportStatic,
-  ){}
-
+  ) {}
   public logout = (req: Request, res: Response, next: NextFunction): void => {
     req.logout((err) => {
-      if(err) {
+      if (err) {
         return next(err);
       }
       return res.send('ok');
-    })
-  }
+    });
+  };
 
   public localLogin = (req: Request, res: Response, next: NextFunction): void => {
-    this.passport.authenticate('local',async (error: HttpException, user: Express.User, info: { message: string }) => {
-      if(error) {
+    this.passport.authenticate('local', async (error: HttpException, user: Express.User, info: { message: string }) => {
+      if (error) {
         return next(error);
       }
 
-      if(info) {
+      if (info) {
         return res.status(401).send(info.message);
       }
 
       return req.login(user, async (loginErr) => {
-        if(loginErr) {
+        if (loginErr) {
           return next(loginErr);
         }
 
@@ -49,12 +47,12 @@ class AuthService {
             nickname: existUser.nickname,
             email: existUser.email,
           });
-        } catch(error) {
+        } catch (error) {
           next(error);
         }
-      })
+      });
     })(req, res, next);
-  }
+  };
 
   public async getHashedPassword(password: string): Promise<string> {
     const salt = await genSalt(config.bcrypt.saltRounds);
@@ -65,7 +63,7 @@ class AuthService {
   public async comparePassword(data: string | Buffer, encrypted: string): Promise<void> {
     const result = await bcrypt.compare(data, encrypted);
 
-    if(!result) {
+    if (!result) {
       throw new HttpException(403, '비밀번호가 일치하지 않습니다.');
     }
   }
@@ -74,18 +72,18 @@ class AuthService {
     const existUser = await this.userModel.findOne({
       where: { email },
       paranoid: false,
-    });  
+    });
 
-    if(existUser) {
-      throw new HttpException(404, "이미 사용중인 이메일입니다.");
+    if (existUser) {
+      throw new HttpException(404, '이미 사용중인 이메일입니다.');
     }
   }
 
   public async register(user: CreateUserDTO): Promise<void> {
     const newUser = await this.userModel.create(user);
 
-    if(!newUser) {
-      throw new HttpException(400, "회원가입 실패!");
+    if (!newUser) {
+      throw new HttpException(400, '회원가입 실패!');
     }
   }
 
@@ -95,10 +93,10 @@ class AuthService {
       paranoid: false,
     });
 
-    if(!existUser) {
+    if (!existUser) {
       throw new HttpException(404, '존재하지 않는 이메일입니다.');
     }
-    
+
     return existUser;
   }
 }

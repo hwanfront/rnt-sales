@@ -1,7 +1,4 @@
-import { Logger } from 'winston';
-import { Model } from "sequelize";
-import { PassportStatic } from 'passport';
-import User from "../src/models/user";
+import User from '../src/models/user';
 import Revenue from '../src/models/revenue';
 import RevenueDetail from '../src/models/revenueDetail';
 import Item from '../src/models/item';

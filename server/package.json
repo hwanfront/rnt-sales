@@ -6,7 +6,11 @@
     "db:create": "sequelize-cli db:create --config ./config/config.js",
     "db:drop": "sequelize-cli db:drop --config ./config/config.js",
     "build": "tsc -p .",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'npx' 'ts-node' src/app.ts"
+    "dev": "nodemon src/app.ts --watch \"src/**/*.ts\" --exec \"yarn lint && npx ts-node\"",
+    
+    "lint": "eslint . --ext ts",
+    "prettier": "prettier . --ext ts",
+    "prettier:format": "prettier --config .prettierrc './src/**/*.ts' --write"
   },
   "license": "MIT",
   "dependencies": {
@@ -44,7 +48,11 @@
     "@types/passport": "^1.0.12",
     "@types/passport-local": "^1.0.35",
     "@types/validator": "^13.11.1",
+    "eslint": "^8.52.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
     "nodemon": "^3.0.1",
+    "prettier": "^3.0.3",
     "ts-node": "^10.9.1"
   }
 }

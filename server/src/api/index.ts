@@ -13,4 +13,4 @@ export default () => {
   revenue(app);
   item(app);
   return app;
-}
+};

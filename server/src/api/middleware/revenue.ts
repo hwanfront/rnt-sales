@@ -12,4 +12,4 @@ export const checkRevenueIdInWorkspace = asyncHandler(async (req: Request, res: 
   const revenueServiceInst = Container.get(RevenueService);
   await revenueServiceInst.checkRevenueInWorkspace(parseInt(req.params.id, 10), workspace.id);
   next();
-})
+});

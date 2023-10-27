@@ -12,4 +12,4 @@ export const checkItemInWorkspace = asyncHandler(async (req: Request, res: Respo
   const itemServiceInst = Container.get(ItemService);
   await itemServiceInst.checkItemInWorkspace(parseInt(req.params.id, 10), workspace.id);
   next();
-})
+});

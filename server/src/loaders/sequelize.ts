@@ -1,7 +1,7 @@
-import { sequelize } from "../models";
+import { sequelize } from '../models';
 
-import type { Sequelize, SyncOptions } from "sequelize";
+import type { Sequelize, SyncOptions } from 'sequelize';
 
 export default async (syncOption: SyncOptions): Promise<Sequelize> => {
-  return await sequelize.sync(syncOption)
-}
+  return await sequelize.sync(syncOption);
+};
