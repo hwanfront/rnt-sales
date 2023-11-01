@@ -7,10 +7,10 @@ import {
   checkUserHasEditPermission,
   checkUserInWorkspace,
   checkRevenueIdInWorkspace,
-} from '../middleware';
-import { sequelize } from '../../models';
-import RevenueService from '../../services/revenue';
-import WorkspaceService from '../../services/workspace';
+} from '@middleware';
+import { sequelize } from '@models';
+import RevenueService from '@services/revenue';
+import WorkspaceService from '@services/workspace';
 
 const router = express.Router();
 

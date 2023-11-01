@@ -1,7 +1,7 @@
-import router from '../api';
-import config from '../config';
+import router from '@api';
+import config from '@config';
+import HttpException from '@utils/HttpException';
 import { logger } from './logger';
-import HttpException from '../utils/HttpException';
 
 import type { Application, NextFunction, Request, Response } from 'express';
 

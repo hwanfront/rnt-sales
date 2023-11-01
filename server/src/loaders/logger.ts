@@ -4,7 +4,7 @@ import morgan from 'morgan';
 import moment from 'moment';
 import DailyRotateFile from 'winston-daily-rotate-file';
 
-import config from '../config';
+import config from '@config';
 
 import type { Application } from 'express';
 

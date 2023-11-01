@@ -5,7 +5,7 @@ import cors from 'cors';
 import hpp from 'hpp';
 import helmet from 'helmet';
 
-import config from '../config';
+import config from '@config';
 
 import type { Application } from 'express';
 import type { SessionOptions } from 'express-session';

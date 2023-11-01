@@ -1,8 +1,8 @@
 import { DataTypes, Model } from 'sequelize';
 
-import { sequelize } from './sequelize';
-import User from './user';
-import Workspace from './workspace';
+import { sequelize } from '@models/sequelize';
+import User from '@models/user';
+import Workspace from '@models/workspace';
 
 import { CreationOptional, ForeignKey, InferAttributes, InferCreationAttributes } from 'sequelize';
 

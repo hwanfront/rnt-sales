@@ -2,11 +2,11 @@ import express from 'express';
 import Container from 'typedi';
 import asyncHandler from 'express-async-handler';
 
-import { checkAuthenticated, checkUserIdInWorkspace, checkUserInWorkspace, checkWorkspaceOwner } from '../middleware';
-import WorkspaceMemberService from '../../services/workspaceMember';
-import WorkspaceService from '../../services/workspace';
-import UserService from '../../services/user';
-import HttpException from '../../utils/HttpException';
+import { checkAuthenticated, checkUserIdInWorkspace, checkUserInWorkspace, checkWorkspaceOwner } from '@middleware';
+import WorkspaceMemberService from '@services/workspaceMember';
+import WorkspaceService from '@services/workspace';
+import UserService from '@services/user';
+import HttpException from '@utils/HttpException';
 
 const router = express.Router();
 

@@ -1,11 +1,11 @@
 export * from './sequelize';
 
-import User, { associate as associateUser } from './user';
-import Revenue, { associate as associateRevenue } from './revenue';
-import RevenueDetail, { associate as associateRevenueDetail } from './revenueDetail';
-import Item, { associate as associateItem } from './item';
-import Workspace, { associate as associateWorkspace } from './workspace';
-import WorkspaceMember from './workspaceMember';
+import User, { associate as associateUser } from '@models/user';
+import Revenue, { associate as associateRevenue } from '@models/revenue';
+import RevenueDetail, { associate as associateRevenueDetail } from '@models/revenueDetail';
+import Item, { associate as associateItem } from '@models/item';
+import Workspace, { associate as associateWorkspace } from '@models/workspace';
+import WorkspaceMember from '@models/workspaceMember';
 
 const sequelizeDB = {
   User,

@@ -1,13 +1,13 @@
 import passport from 'passport';
 import { Container } from 'typedi';
 
-import User from '../models/user';
-import Revenue from '../models/revenue';
-import RevenueDetail from '../models/revenueDetail';
-import Item from '../models/item';
-import Workspace from '../models/workspace';
-import WorkspaceMember from '../models/workspaceMember';
-import { logger } from './logger';
+import User from '@models/user';
+import Revenue from '@models/revenue';
+import RevenueDetail from '@models/revenueDetail';
+import Item from '@models/item';
+import Workspace from '@models/workspace';
+import WorkspaceMember from '@models/workspaceMember';
+import { logger } from '@loaders/logger';
 
 export default () => {
   try {

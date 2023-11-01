@@ -1,13 +1,13 @@
 import { Service, Inject } from 'typedi';
 import bcrypt, { genSalt } from 'bcrypt';
 
-import config from '../config';
-import UsersService from './user';
-import HttpException from '../utils/HttpException';
+import config from '@config';
+import UsersService from '@services/user';
+import HttpException from '@utils/HttpException';
 
 import type { NextFunction, Request, Response } from 'express';
 import type { PassportStatic } from 'passport';
-import type { CreateUserDTO } from '../interfaces/IUser';
+import type { CreateUserDTO } from '@interfaces/IUser';
 
 @Service()
 class AuthService {

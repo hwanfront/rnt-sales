@@ -1,8 +1,8 @@
 import Container from 'typedi';
 import asyncHandler from 'express-async-handler';
 
-import WorkspaceService from '../../services/workspace';
-import ItemService from '../../services/item';
+import WorkspaceService from '@services/workspace';
+import ItemService from '@services/item';
 
 import type { NextFunction, Request, Response } from 'express';
 

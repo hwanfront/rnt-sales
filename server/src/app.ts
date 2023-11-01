@@ -2,9 +2,9 @@ import 'reflect-metadata';
 import express from 'express';
 import dotenv from 'dotenv';
 
-import loaders from './loaders';
-import config from './config';
-import { logger } from './loaders/logger';
+import loaders from '@loaders';
+import config from '@config';
+import { logger } from '@loaders/logger';
 
 dotenv.config();
 

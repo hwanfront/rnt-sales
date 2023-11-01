@@ -7,9 +7,9 @@ import {
   checkItemInWorkspace,
   checkUserHasEditPermission,
   checkUserInWorkspace,
-} from '../middleware';
-import WorkspaceService from '../../services/workspace';
-import ItemService from '../../services/item';
+} from '@middleware';
+import WorkspaceService from '@services/workspace';
+import ItemService from '@services/item';
 
 const router = express.Router();
 

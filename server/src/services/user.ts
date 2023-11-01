@@ -1,10 +1,10 @@
 import { Service, Inject } from 'typedi';
 
-import User from '../models/user';
-import HttpException from '../utils/HttpException';
+import User from '@models/user';
+import HttpException from '@utils/HttpException';
 
 import type { Transaction } from 'sequelize';
-import type { UpdateUserDTO } from '../interfaces/IUser';
+import type { UpdateUserDTO } from '@interfaces/IUser';
 
 @Service()
 class UserService {

@@ -2,8 +2,8 @@ import passport from 'passport';
 import Container from 'typedi';
 import { Strategy as LocalStrategy } from 'passport-local';
 
-import AuthService from '../services/auth';
-import UsersService from '../services/user';
+import AuthService from '@services/auth';
+import UsersService from '@services/user';
 
 import type { Application } from 'express';
 import type { VerifyFunction } from 'passport-local';

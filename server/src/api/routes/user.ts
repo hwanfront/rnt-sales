@@ -2,10 +2,10 @@ import express from 'express';
 import Container from 'typedi';
 import asyncHandler from 'express-async-handler';
 
-import { checkAuthenticated } from '../middleware';
-import { sequelize } from '../../models';
-import AuthService from '../../services/auth';
-import UserService from '../../services/user';
+import { checkAuthenticated } from '@middleware';
+import { sequelize } from '@models';
+import AuthService from '@services/auth';
+import UserService from '@services/user';
 
 const router = express.Router();
 
