@@ -1,6 +1,6 @@
 import passport from 'passport';
-import Container from 'typedi';
 import { Strategy as LocalStrategy } from 'passport-local';
+import Container from 'typedi';
 
 import AuthService from '@services/auth';
 import UsersService from '@services/user';

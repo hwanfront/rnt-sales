@@ -1,6 +1,6 @@
 import express from 'express';
-import Container from 'typedi';
 import asyncHandler from 'express-async-handler';
+import Container from 'typedi';
 
 import {
   checkAuthenticated,

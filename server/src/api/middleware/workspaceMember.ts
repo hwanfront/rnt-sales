@@ -1,8 +1,8 @@
-import Container from 'typedi';
 import asyncHandler from 'express-async-handler';
+import Container from 'typedi';
 
-import HttpException from '@utils/HttpException';
 import WorkspaceMemberService from '@services/workspaceMember';
+import HttpException from '@utils/HttpException';
 
 import type { NextFunction, Request, Response } from 'express';
 

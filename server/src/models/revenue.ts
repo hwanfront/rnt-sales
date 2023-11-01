@@ -1,12 +1,12 @@
 import { DataTypes, Model } from 'sequelize';
 
-import { sequelize } from '@models/sequelize';
-import Workspace from '@models/workspace';
+import type { SequelizeDB } from '@models';
 import Item from '@models/item';
 import RevenueDetail from '@models/revenueDetail';
+import { sequelize } from '@models/sequelize';
+import Workspace from '@models/workspace';
 
 import type { CreationOptional, ForeignKey, InferAttributes, InferCreationAttributes } from 'sequelize';
-import type { SequelizeDB } from '@models';
 
 class Revenue extends Model<InferAttributes<Revenue>, InferCreationAttributes<Revenue>> {
   declare id: CreationOptional<number>;

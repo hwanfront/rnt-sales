@@ -5,15 +5,43 @@ module.exports = {
   },
   parser: "@typescript-eslint/parser",
   plugins: [
+    "import",
     "@typescript-eslint",
     "prettier"
   ],
   extends: [
     "eslint:recommended",
+    "plugin:import/recommended",
     "plugin:@typescript-eslint/recommended",
     "prettier"
   ],
   rules: {
+    "import/order": ["error", {
+      "newlines-between": "always",
+      groups: [
+        "external",
+        "internal",
+        "type",
+      ],
+      pathGroups: [
+        { pattern: "@api", group: "internal", position: "after" },
+        { pattern: "@middleware", group: "internal", position: "after" },
+        { pattern: "@config", group: "internal", position: "after" },
+        { pattern: "@routes/*", group: "internal", position: "after" },
+        { pattern: "@interfaces/*", group: "internal", position: "after" },
+        { pattern: "@loaders", group: "internal", position: "after" },
+        { pattern: "@loaders/*", group: "internal", position: "after" },
+        { pattern: "@models", group: "internal", position: "after" },
+        { pattern: "@models/*", group: "internal", position: "after" },
+        { pattern: "@services/*", group: "internal", position: "after" },
+        { pattern: "@utils/*", group: "internal", position: "after" }
+      ],
+      alphabetize: {
+        order: "asc"
+      },
+      distinctGroup: false
+    }],
+    "import/no-unresolved": "error",
     "prettier/prettier": "error",
     "arrow-body-style": "off",
     "prefer-arrow-callback": "off"
@@ -25,6 +53,13 @@ module.exports = {
     sourceType: "module",
     ecmaFeatures: {
       jsx: false
+    }
+  },
+  settings: {
+    "import/resolver": {
+      typescript: {
+        project: __dirname
+      },
     }
   },
   overrides: [

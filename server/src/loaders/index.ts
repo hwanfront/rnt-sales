@@ -1,11 +1,11 @@
-import sequelizeSyncLoader from './sequelize';
-import expressLoader from './express';
-import passportLoader, { passportConfig } from './passport';
-import loggerLoader, { logger } from './logger';
-import dependencyInjector from './dependencyInjector';
-import routerLoader from './router';
-
 import type { Application } from 'express';
+
+import dependencyInjector from './dependencyInjector';
+import expressLoader from './express';
+import loggerLoader, { logger } from './logger';
+import passportLoader, { passportConfig } from './passport';
+import routerLoader from './router';
+import sequelizeSyncLoader from './sequelize';
 
 export default async ({ expressApp }: { expressApp: Application }) => {
   loggerLoader({ app: expressApp });

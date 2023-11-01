@@ -1,7 +1,7 @@
-import User from '@models/user';
+import Item from '@models/item';
 import Revenue from '@models/revenue';
 import RevenueDetail from '@models/revenueDetail';
-import Item from '@models/item';
+import User from '@models/user';
 import Workspace from '@models/workspace';
 import WorkspaceMember from '@models/workspaceMember';
 

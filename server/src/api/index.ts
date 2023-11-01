@@ -1,9 +1,10 @@
 import { Router } from 'express';
+
+import item from '@routes/item';
+import revenue from '@routes/revenue';
 import user from '@routes/user';
 import workspace from '@routes/workspace';
 import workspaceMember from '@routes/workspaceMember';
-import revenue from '@routes/revenue';
-import item from '@routes/item';
 
 export default () => {
   const app = Router();

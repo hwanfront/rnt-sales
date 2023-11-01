@@ -1,9 +1,9 @@
 export * from './sequelize';
 
-import User, { associate as associateUser } from '@models/user';
+import Item, { associate as associateItem } from '@models/item';
 import Revenue, { associate as associateRevenue } from '@models/revenue';
 import RevenueDetail, { associate as associateRevenueDetail } from '@models/revenueDetail';
-import Item, { associate as associateItem } from '@models/item';
+import User, { associate as associateUser } from '@models/user';
 import Workspace, { associate as associateWorkspace } from '@models/workspace';
 import WorkspaceMember from '@models/workspaceMember';
 

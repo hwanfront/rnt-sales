@@ -1,10 +1,10 @@
 import { Service, Inject } from 'typedi';
 
+import type { CreateWorkspaceDTO, UpdateWorkspaceDTO } from '@interfaces/IWorkspace';
 import Workspace from '@models/workspace';
 import HttpException from '@utils/HttpException';
 
 import type { Transaction } from 'sequelize';
-import type { CreateWorkspaceDTO, UpdateWorkspaceDTO } from '@interfaces/IWorkspace';
 
 @Service()
 class WorkspaceService {

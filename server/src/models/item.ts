@@ -1,10 +1,10 @@
 import { DataTypes, Model } from 'sequelize';
 
 import { sequelize } from '@models';
+import type { SequelizeDB } from '@models';
 import Workspace from '@models/workspace';
 
 import type { CreationOptional, ForeignKey, InferAttributes, InferCreationAttributes } from 'sequelize';
-import type { SequelizeDB } from '@models';
 
 class Item extends Model<InferAttributes<Item>, InferCreationAttributes<Item>> {
   declare id: CreationOptional<number>;
