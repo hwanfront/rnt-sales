@@ -7,7 +7,8 @@ module.exports = {
   plugins: [
     "import",
     "@typescript-eslint",
-    "prettier"
+    "prettier",
+    "unused-imports"
   ],
   extends: [
     "eslint:recommended",
@@ -16,6 +17,8 @@ module.exports = {
     "prettier"
   ],
   rules: {
+		"no-unused-vars": "off",
+    "unused-imports/no-unused-imports": "error",
     "import/order": ["error", {
       "newlines-between": "always",
       groups: [
@@ -44,7 +47,7 @@ module.exports = {
     "import/no-unresolved": "error",
     "prettier/prettier": "error",
     "arrow-body-style": "off",
-    "prefer-arrow-callback": "off"
+    "prefer-arrow-callback": "off",
   },
   parserOptions: {
     project: './tsconfig.json',
@@ -58,7 +61,8 @@ module.exports = {
   settings: {
     "import/resolver": {
       typescript: {
-        project: __dirname
+        project: __dirname,
+        alwaysTryTypes: true
       },
     }
   },
