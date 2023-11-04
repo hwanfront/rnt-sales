@@ -17,7 +17,7 @@ module.exports = {
     "prettier"
   ],
   rules: {
-		"no-unused-vars": "off",
+    "no-unused-vars": "off",
     "unused-imports/no-unused-imports": "error",
     "import/order": ["error", {
       "newlines-between": "always",
