@@ -13,7 +13,9 @@
   "scripts": {
     "server": "yarn workspace server start",
     "client": "yarn workspace client dev",
+    "prettier:client": "yarn workspace client prettier",
     "prettier:server": "yarn workspace server prettier",
+    "lint:client": "yarn workspace client lint"
     "lint:server": "yarn workspace server lint"
   }
 }
