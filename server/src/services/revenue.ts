@@ -1,11 +1,11 @@
 import { Service, Inject } from 'typedi';
 
-import Revenue from '../models/revenue';
-import HttpException from '../utils/HttpException';
+import type { CreateRevenueDTO, UpdateRevenueDTO } from '@interfaces/IRevenue';
+import type { CreateRevenueDetailDTO, UpdateRevenueDetailDTO } from '@interfaces/IRevenueDetail';
+import Revenue from '@models/revenue';
+import HttpException from '@utils/HttpException';
 
 import type { Transaction } from 'sequelize';
-import type { CreateRevenueDTO, UpdateRevenueDTO } from '../interfaces/IRevenue';
-import type { CreateRevenueDetailDTO, UpdateRevenueDetailDTO } from '../interfaces/IRevenueDetail';
 
 @Service()
 class RevenueService {

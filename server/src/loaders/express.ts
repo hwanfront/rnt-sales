@@ -1,11 +1,11 @@
-import express from 'express';
-import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import hpp from 'hpp';
+import express from 'express';
+import session from 'express-session';
 import helmet from 'helmet';
+import hpp from 'hpp';
 
-import config from '../config';
+import config from '@config';
 
 import type { Application } from 'express';
 import type { SessionOptions } from 'express-session';

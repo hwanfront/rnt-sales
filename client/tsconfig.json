@@ -23,6 +23,12 @@
     "baseUrl": "./src",
     "paths": {
       "@components/*": ["components/*"],
+      "@contexts/*": ["contexts/*"],
+      "@hooks/*": ["hooks/*"],
+      "@interfaces/*": ["interfaces/*"],
+      "@pages/*": ["pages/*"],
+      "@ui/*": ["ui/*"],
+      "@utils/*": ["utils/*"],
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],

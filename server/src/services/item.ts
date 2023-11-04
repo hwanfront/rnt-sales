@@ -1,9 +1,8 @@
 import { Service, Inject } from 'typedi';
 
-import Item from '../models/item';
-import HttpException from '../utils/HttpException';
-
-import type { CreateItemDTO, UpdateItemDTO } from '../interfaces/IItem';
+import type { CreateItemDTO, UpdateItemDTO } from '@interfaces/IItem';
+import Item from '@models/item';
+import HttpException from '@utils/HttpException';
 
 @Service()
 class ItemService {

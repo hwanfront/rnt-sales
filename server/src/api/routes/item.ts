@@ -1,15 +1,15 @@
 import express from 'express';
-import Container from 'typedi';
 import asyncHandler from 'express-async-handler';
+import Container from 'typedi';
 
 import {
   checkAuthenticated,
   checkItemInWorkspace,
   checkUserHasEditPermission,
   checkUserInWorkspace,
-} from '../middleware';
-import WorkspaceService from '../../services/workspace';
-import ItemService from '../../services/item';
+} from '@middleware';
+import ItemService from '@services/item';
+import WorkspaceService from '@services/workspace';
 
 const router = express.Router();
 

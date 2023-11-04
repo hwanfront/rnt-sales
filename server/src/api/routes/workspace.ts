@@ -1,14 +1,13 @@
 import express from 'express';
-import Container from 'typedi';
 import asyncHandler from 'express-async-handler';
+import Container from 'typedi';
 
-import { checkAuthenticated, checkUserInWorkspace, checkWorkspaceOwner } from '../middleware';
-import { sequelize } from '../../models';
-import UsersService from '../../services/user';
-import WorkspaceService from '../../services/workspace';
-import WorkspaceMemberService from '../../services/workspaceMember';
-
-import type { UpdateWorkspaceDTO } from '../../interfaces/IWorkspace';
+import { checkAuthenticated, checkUserInWorkspace, checkWorkspaceOwner } from '@middleware';
+import type { UpdateWorkspaceDTO } from '@interfaces/IWorkspace';
+import { sequelize } from '@models';
+import UsersService from '@services/user';
+import WorkspaceService from '@services/workspace';
+import WorkspaceMemberService from '@services/workspaceMember';
 
 const router = express.Router();
 

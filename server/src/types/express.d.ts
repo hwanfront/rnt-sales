@@ -1,9 +1,9 @@
-import User from '../src/models/user';
-import Revenue from '../src/models/revenue';
-import RevenueDetail from '../src/models/revenueDetail';
-import Item from '../src/models/item';
-import Workspace from '../src/models/workspace';
-import WorkspaceMember from '../src/models/workspaceMember';
+import Item from '@models/item';
+import Revenue from '@models/revenue';
+import RevenueDetail from '@models/revenueDetail';
+import User from '@models/user';
+import Workspace from '@models/workspace';
+import WorkspaceMember from '@models/workspaceMember';
 
 declare global {
   namespace Models {

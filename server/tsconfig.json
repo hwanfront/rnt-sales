@@ -13,13 +13,28 @@
     "isolatedModules": true,
     "noEmit": false,
     "outDir": "./dist",
-    "typeRoots": ["../node_module/@types", "./node_module/@types", "./types"],
+    "typeRoots": ["../node_module/@types", "./node_module/@types", "src/types"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@api": ["api"],
+      "@middleware": ["api/middleware"],
+      "@config": ["config"],
+      "@routes/*": ["api/routes/*"],
+      "@interfaces/*": ["interfaces/*"],
+      "@loaders": ["loaders"],
+      "@loaders/*": ["loaders/*"],
+      "@models": ["models"],
+      "@models/*": ["models/*"],
+      "@services/*": ["services/*"],
+      "@utils/*": ["utils/*"]
+    }
   },
   "ts-node": {
-    "files": true
+    "files": true,
+    "require": ["tsconfig-paths/register"]
   },
-  "include": ["./src/**/*", "./types"],
+  "include": ["./src/**/*", "src/types"],
   "exclude": ["node_modules"],
 }

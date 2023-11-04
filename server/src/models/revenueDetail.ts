@@ -1,10 +1,10 @@
 import { DataTypes, Model } from 'sequelize';
 
-import { sequelize } from './sequelize';
-import Revenue from './revenue';
+import type { SequelizeDB } from '@models';
+import Revenue from '@models/revenue';
+import { sequelize } from '@models/sequelize';
 
 import type { ForeignKey, InferAttributes, InferCreationAttributes } from 'sequelize';
-import type { SequelizeDB } from '.';
 
 class RevenueDetail extends Model<InferAttributes<RevenueDetail>, InferCreationAttributes<RevenueDetail>> {
   declare id: ForeignKey<Revenue['id']>;

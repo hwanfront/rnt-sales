@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
+
 import Component from '@components/Component';
 import './App.css';
 
-const App = ():JSX.Element => {
+const App = () => {
   const [count, setCount] = useState(0);
+  const [name, setName] = useState({ firstName: '', secondName: '' });
 
   useEffect(() => {
     setCount(3);
+    setName({ firstName: 'first', secondName: 'second' });
   }, []);
 
   return (
@@ -14,7 +17,7 @@ const App = ():JSX.Element => {
       <button type="button" onClick={() => setCount((prev) => prev + 1)}>
         {`count is ${count}`}
       </button>
-      <Component />
+      <Component tel="010101010" firstName={name.firstName} secondName={name.secondName} />
     </div>
   );
 };

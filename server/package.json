@@ -7,9 +7,8 @@
     "db:drop": "sequelize-cli db:drop --config ./config/config.js",
     "build": "tsc -p .",
     "dev": "nodemon src/app.ts --watch \"src/**/*.ts\" --exec \"yarn lint && npx ts-node\"",
-    
     "lint": "eslint . --ext ts",
-    "prettier": "prettier . --ext ts",
+    "prettier": "prettier --config .prettierrc --check './src/**/*.ts'",
     "prettier:format": "prettier --config .prettierrc './src/**/*.ts' --write"
   },
   "license": "MIT",
@@ -48,11 +47,18 @@
     "@types/passport": "^1.0.12",
     "@types/passport-local": "^1.0.35",
     "@types/validator": "^13.11.1",
+    "@typescript-eslint/eslint-plugin": "^6.9.1",
+    "@typescript-eslint/parser": "^6.9.1",
     "eslint": "^8.52.0",
+    "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.0.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-unused-imports": "^3.0.0",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.3",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0"
   }
 }

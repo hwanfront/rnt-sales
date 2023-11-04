@@ -1,9 +1,10 @@
-import router from '../api';
-import config from '../config';
-import { logger } from './logger';
-import HttpException from '../utils/HttpException';
+import router from '@api';
+import config from '@config';
+import HttpException from '@utils/HttpException';
 
 import type { Application, NextFunction, Request, Response } from 'express';
+
+import { logger } from './logger';
 
 export default ({ app }: { app: Application }) => {
   app.use(config.api.prefix, router());

@@ -1,16 +1,16 @@
 import express from 'express';
-import Container from 'typedi';
 import asyncHandler from 'express-async-handler';
+import Container from 'typedi';
 
 import {
   checkAuthenticated,
   checkUserHasEditPermission,
   checkUserInWorkspace,
   checkRevenueIdInWorkspace,
-} from '../middleware';
-import { sequelize } from '../../models';
-import RevenueService from '../../services/revenue';
-import WorkspaceService from '../../services/workspace';
+} from '@middleware';
+import { sequelize } from '@models';
+import RevenueService from '@services/revenue';
+import WorkspaceService from '@services/workspace';
 
 const router = express.Router();
 
