@@ -1,7 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 
-import { sequelize } from '@models';
 import type { SequelizeDB } from '@models';
+import { sequelize } from '@models/sequelize';
 import Workspace from '@models/workspace';
 
 import type { CreationOptional, ForeignKey, InferAttributes, InferCreationAttributes } from 'sequelize';
