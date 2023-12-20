@@ -71,7 +71,7 @@ module.exports = {
       files: ["src/**/*.ts"],
       rules: {
         "no-console": 1,
-        "prettier/prettier": 2,
+        'prettier/prettier': ['error', { endOfLine: 'auto' }],
         "@typescript-eslint/no-unused-vars": [2, { args: "none" }]
       }
     },

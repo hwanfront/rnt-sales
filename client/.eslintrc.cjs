@@ -21,8 +21,9 @@ module.exports = {
   },
   rules: {
     quotes: ['error', 'single'],
-    'prettier/prettier': 'error',
+    'prettier/prettier': ['error', { endOfLine: 'auto' }],
 		"no-unused-vars": "off",
+    "no-use-before-define": ["error", { "functions": false }],
     "unused-imports/no-unused-imports": "error",
     'no-duplicate-imports': 'error',
     'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
@@ -33,7 +34,7 @@ module.exports = {
       extensions: ['.tsx', '.ts'],
     },],
     'react/function-component-definition': ['error', {
-      namedComponents: 'arrow-function',
+      namedComponents: 'function-declaration',
     }],
     'import/extensions': ['error', 'ignorePackages', {
       ts: 'never',
@@ -48,16 +49,16 @@ module.exports = {
       ],
       pathGroups: [
         { pattern: "react*", group: "external", position: "before" },
+        { pattern: "@app", group: "internal", position: "after" },
         { pattern: "@components", group: "internal", position: "after" },
         { pattern: "@contexts", group: "internal", position: "after" },
         { pattern: "@hooks", group: "internal", position: "after" },
         { pattern: "@interfaces", group: "internal", position: "after" },
         { pattern: "@pages", group: "internal", position: "after" },
+        { pattern: "@router", group: "internal", position: "after" },
         { pattern: "@ui", group: "internal", position: "after" },
         { pattern: "@utils", group: "internal", position: "after" },
-        { pattern: "@**/*.tsx", group: "internal", position: "before" },
-        { pattern: "@**/*.ts", group: "internal", position: "before" },
-        { pattern: "@**/*.{css,scss}", group: "internal", position: "after"},
+        { pattern: "@styles", group: "internal", position: "after" },
       ],
       alphabetize: {
         order: "asc"
@@ -65,7 +66,9 @@ module.exports = {
       distinctGroup: false,
       pathGroupsExcludedImportTypes: ["react-hook-form"]
     }],
-    "import/no-unresolved": "error",
+    'import/no-unresolved': ['error', {
+      ignore: ['\\.css$']
+    }],
   },
   settings: {
     'import/resolver': {
